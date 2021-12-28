@@ -1,0 +1,72 @@
+{% extends parent_template|default:"base.html" %}
+{% load static %}
+
+{% block content %}
+    <div class="card border-success col-md-10 mx-md-auto mb-3 px-0">
+        <h2 class="card-header bg-success text-white text-center">
+            Vote on the Best Description for {{ object }}.
+        </h2>
+        <div class="card-body text-success">
+
+            <!-- Image -->
+            <div class="row justify-content-center">
+                <div class="col-md-4">
+                    <img class="img-fluid" src="{% static object.image_filename %}">
+                </div>
+            </div>
+
+        <!-- Expandable Instructions -->
+        <a data-bs-toggle="collapse" href="#description"><h3>Show/Hide Instructions...</h3></a>
+        <div class="row info-box m-3 h5 text-success collapse" id="description">
+            <p>
+                Which description, besides your own if you wrote one, most believably, or most creatively, describes the 
+				object above? You get only one vote and your vote will be anonymous. In other words, the system will 
+				record that you voted but will not record whose description you voted for. That means, however, that your
+				vote cannot be changed once it is cast so be careful.
+			</p>
+			<p>
+				Note that you must vote for someone else's description, not your own no matter how creative or believable 
+				you think it may be.
+            </p>
+            <p>
+                Once I get a good number of votes I will display the results, identifying the author of each
+                description, the number of votes each one got, and a description of what the object really is.
+            </p>
+        </div>
+
+            <!-- Instructions -->
+            <h4 class="card-title">Select the description you think is most believable:</h4>
+            {% if not can_vote %}
+                <p class="text-danger">(You have already voted for one of these descriptions and cannot vote again.)</p>
+            {% endif %}
+            <hr>
+
+            <!-- Voting form -->
+            {% if error_message %}
+                <div class="text-danger">
+                    <p><strong>{{ error_message }}</strong></p>
+                </div>
+            {% endif %}
+            <form action="{% url 'whatsit:object_view' object.number %}" method="post">
+                {% csrf_token %}
+                {% for description in descriptions %}
+                    <div class="form-check">
+                        <label class="form-check-label">
+                            <input class="form-check-input" type="radio" name="vote" value="{{ description.id }}">
+                            {{ description.description }}
+                        </label>
+                    </div>
+                    <hr>
+                {% endfor %}
+                <div class="row justify-content-around">
+                    <button class="btn btn-outline-success btn-lg col-md-4"
+                            type="submit" name="button" value="cancel">Return</button>
+                    {% if can_vote %}
+                        <button class="btn btn-outline-success btn-lg col-md-4"
+                                type="submit" name="button" value="save">Vote</button>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

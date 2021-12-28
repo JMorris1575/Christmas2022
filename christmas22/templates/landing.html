@@ -1,0 +1,51 @@
+{% extends parent_template|default:"base.html" %}
+{% load static %}
+
+{% block content %}
+
+    <div class="row">
+        <div class="col-sm-4">
+            <div class="card h-100 px-0 border-success">
+                <img src="{% static 'images/Christmas-Tree-And-Presents-Edited.svg' %}"
+                     class="crd-img-top px-4 pt-3" alt="Christmas Tree with Gifts">
+                <div class="card-body">
+<!--                    <h2 class="card-text mx-2">-->
+<!--                        Pick a Gift from Under the Tree.-->
+<!--                    </h2>-->
+                </div>
+                <a href="{% url 'gift:home' %}" class="btn btn-success stretched-link">
+                    <h3>Under the Christmas Tree</h3>
+                </a>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="card h-100 px-0 border-success">
+                <img src="{% static 'images/NostalgicBoy.svg' %}"
+                     class="card-img-top px-4 pt-3" alt="Nostalgic Boy">
+                <div class="card-body">
+<!--                    <h2 class="card-text mx-2">-->
+<!--                        Share Christmas Memories.-->
+<!--                    </h2>-->
+                </div>
+                <a href="{% url 'memory:memory_list' %}" class="btn btn-success stretched-link ">
+                    <h3>Christmas Memories</h3>
+                </a>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="card h-100 px-0 border-success">
+                <img src="{% static 'images/Very-Happy-Smiling-Family.svg' %}"
+                     class="crd-img-top px-1 pt-3" alt="Snowman Family">
+                <div class="card-body">
+<!--                    <h2 class="card-text mx-2">-->
+<!--                        Play Christmas Family Games.-->
+<!--                    </h2>-->
+                </div>
+                <a href="{% url 'gift:activity_index' %}" class="btn btn-success stretched-link">
+                    <h3>Family Activities</h3>
+                </a>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

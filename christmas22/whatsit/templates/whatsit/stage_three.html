@@ -1,0 +1,49 @@
+{% extends parent_template|default:"base.html" %}
+{% load static %}
+
+{% block content %}
+    <div class="card border-success col-md-10 mx-md-auto mb-3 px-0">
+        <h2 class="card-header bg-success text-white text-center">
+            {{ object }} Final Results
+        </h2>
+        <div class="card-body text-success">
+
+            <!-- Image -->
+            <div class="row justify-content-center">
+                <div class="col-md-4">
+                    <img class="img-fluid" src="{% static object.image_filename %}">
+                </div>
+            </div>
+
+            <!-- Introduction -->
+            <h4 class="card-title">Results for {{ object }}:</h4>
+            <table class="table text-success">
+                <thead>
+                    <tr>
+                        <th scope="col">Author</th>
+                        <th scope="col">Description</th>
+                        <th scope="col">Votes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for description in descriptions %}
+                        <tr>
+                            <td>{{ description.author }}</td>
+                            <td>{{ description.description }}</td>
+                            <td>{{ description.votes }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <hr>
+            <h4>What is it really?</h4>
+            <p>{{ object.correct_description }}</p>
+
+            <div class="row justify-content-around">
+                <a class="btn btn-outline-success col-md-4" href="{% url 'whatsit:object_list' %}">
+                    Return to Object List
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends parent_template|default:"base.html" %}
+{% load static %}
+
+{% block content %}
+
+    <div class="card col-md-10 mx-md-auto mb-3 px-0 border-success">
+        <h2 class="card-header bg-success text-white">Scores for Each Day</h2>
+        <div class="row my-3 px-3">
+            {% for day in daily_scores %}
+                <div class="col-sm-4 my-3">
+                    <div class="card mx-auto justify-content-center">
+                        <h5 class="card-header bg-success text-white">{{ day.heading }}</h5>
+                        <table class="table text-center text-success">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Player</th>
+                                    <th scope="col">Score</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for score in day.scores %}
+                                    <tr>
+                                        <th scope="row">{{ score.user }}</th>
+                                        <td>{{ score.score }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="row no-gutters my-3">
+            <a class="btn btn-outline-success text-center col-md-4 mx-auto"
+                    href="{% url 'wordgame:scoreboard' %}">Return to Scoreboard Page</a>
+            <a class="btn btn-outline-success text-center col-md-4 mx-auto"
+                    href="{% url 'wordgame:entry' %}">Return to Game</a>
+        </div>
+    </div>
+
+{% endblock %}

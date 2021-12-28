@@ -1,0 +1,120 @@
+{% extends parent_template|default:"base.html" %}
+{% load static %}
+
+{% block content %}
+    <div class="card col-md-10 mx-md-auto mb-3 px-0 border-success">
+        <h2 class="card-header bg-success text-white">Christmas Word Game Scoreboard</h2>
+        <div class="row m-3">
+            {% if totals %}
+                <div class="card col-md-6 mx-auto justify-content-center">
+                    <h3 class="card-header bg-success text-white">Cumulative Scores:</h3>
+                    <table class="table text-center text-success">
+                        <thead>
+                            <tr>
+                                <th scope="col">Player</th>
+                                <th scope="col">Words Accepted</th>
+                                <th scope="col">Rounds Played</th>
+                                <th scope="col">Total Score</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for total in totals %}
+                                <tr>
+                                    <th scope="row">{{ total.name }}</th>
+                                    <td>{{ total.words }}</td>
+                                    <td>{{ total.rounds }}</td>
+                                    <td>{{ total.total_score }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <hr class="mt-3">
+                <div class="col-md-10 mx-md-auto">
+                    <div class="row justify-content-center mb-3">
+                        <a class="btn btn-outline-success text-center"
+                           href="{% url 'wordgame:daily_scores' %}">See Each Day's Scores
+                        </a>
+                    </div>
+                </div>
+                <hr>
+            {% endif %}
+        </div>
+        {% if stats %}
+            <div class="col-md-10 mx-md-auto">
+                <div class="row justify-content-center">
+                    <h2 class="mx-auto text-success">Player Word Lists</h2>
+                    <p class="info-box text-success h5">
+                        Click on one of the date:word items below to see player entries for that date.
+                        <inline class="text-black-50">Words printed in grey will be checked for inclusion in the
+                        dictionary.</inline> Words in the regular style are words accepted for one point each.
+                        <strong>Words in this style are unique to that player and have earned two point each.</strong>
+                    </p>
+                </div>
+                <div class="accordion" id="ChristmasWordAccordion">
+                    {% for stat in stats %}
+                        {% if stat.players %}
+                            <div class="card">
+                                <div class="card-header id={{ stat.given_word }}">
+                                    <h3 class="mb-0">
+                                        <button class="btn btn-link collapsed" type="button" data-bs-toggle="collapse"
+                                                data-bs-target="#{{ stat.given_word }}_words">
+                                            {{ stat.given_word.date_published }}: {{ stat.given_word }}
+                                        </button>
+                                    </h3>
+                                </div>
+                                <div id="{{ stat.given_word }}_words" class="collapse"
+                                     data-parent="#ChristmasWordAccordion">
+                                    <div class="card-body">
+                                        <table class="table text-success mb-3">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">Player</th>
+                                                    <th scope="col">Words</th>
+                                                </tr>
+                                            </thead>
+                                            {% for player in stat.players %}
+                                                <tr>
+                                                    <th scope="row">{{ player.name }}</th>
+                                                    <td>
+                                                        {% for word in player.words %}
+                                                            {% if word.score == 2 %}
+                                                                <strong>{{ word.word }}</strong>
+                                                            {% elif word.score == 1 %}
+                                                                {{ word.word }}
+                                                            {% else %}
+                                                                <inline class="text-black-50">{{ word.word }}</inline>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+        <hr>
+        <div class="col-md-10 mx-md-auto">
+            <div class="row justify-content-center mb-3">
+                <a class="btn btn-outline-success text-center"
+                   href="{% url 'wordgame:entry' %}">Return to the Game
+                </a>
+            </div>
+        </div>
+        {% if user.is_staff %}
+            <div class="col-md-10 mx-md-auto">
+                <div class="row justify-content-center mb-3">
+                    <a class="btn btn-outline-danger text-center"
+                       href="{% url 'wordgame:verify' %}">
+                        Accept or Reject Player Words
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

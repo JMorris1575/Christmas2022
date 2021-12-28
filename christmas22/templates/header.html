@@ -1,0 +1,87 @@
+{% load static %}
+
+{% block header %}
+
+    <header>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-2 d-none d-md-inline">
+                    <a href="{% url 'landing' %}" class="brand">
+                        <img src="{% static 'images/ThreeOrnamentsAlpha.png' %}" class="img-fluid">
+                    </a>
+                </div>
+                <div class="col">
+                    <!-- Banner Heading -->
+                    <div class="row">
+                        <div class="col">
+                            <a href="{% url 'landing' %}">
+                                <h1 class="header-text d-inline">Christmas 2021</h1>
+                            </a>
+                        </div>
+                    </div>
+                    <!-- Welcome and Login/Logout Links -->
+                    <div class="row align-items-top">
+                        <div class="col-6">
+                            {% if user.is_authenticated %}
+                                <span class="h5">Welcome {{ user.first_name }}!</span>
+                                <a class="link" href="{% url 'user:logout' %}">  (Logout)</a>
+                            {% else %}
+                                <span class="h5">Welcome!</span>
+                                <a class="link" href="{% url 'user:login' %}?next={{ request.path_info }}">  (Login)</a>
+                            {% endif %}
+                        </div>
+                        <!-- Menu Links -->
+                        <div class="col">
+                            <nav class="navbar navbar-light navbar-expand-lg pt-0">
+                                <button class="navbar-toggler ml-auto p-0 pb-3" type="button"
+                                        data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                                    <span class="navbar-toggler-icon pt-1" style="background:none">
+                                        <i class="fas fa-bars"></i>
+                                    </span>
+                                </button>
+                                <div class="collapse navbar-collapse" id="navbarCollapse">
+                                    <div class="navbar-nav ml-auto nav-fill">
+                                        {% if user.is_staff %}
+                                            <a href="{% url 'mail:send-mail' %}?next={{ next_url }}"
+                                               class="nav-item nav-link btn btn-outline-primary btn-lg text-right pb-3">
+                                                E-mail
+                                            </a>
+                                        {% endif %}
+                                        <a href="{% url 'gift:home' %}"
+                                           class="nav-item nav-link btn btn-outline-primary btn-lg text-right pb-3">
+                                            Gifts
+                                        </a>
+                                        <a href="{% url 'memory:memory_list' %}"
+                                           class="nav-item nav-link btn btn-ouline-primary btn-lg text-right pb-3">
+                                            Memories
+                                        </a>
+                                        <a href="{% url 'gift:activity_index' %}"
+                                           class="nav-item nav-link btn btn-outline-primary btn-lg text-right pb-3">
+                                            Activities
+                                        </a>
+                                    </div>
+                                </div>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- Memory Block -->
+    {% if user.is_authenticated %}
+        <div class="container">
+            <div class="row">
+                {% if memory %}
+                    <div class="col memory p-3 m-3 mb-0">
+                            <a class="d-md-none" data-bs-toggle="collapse" href="#memory"><span>{{ memory.author }}...</span></a>
+                            <span class="d-none d-md-inline">{{ memory.author }}</span>
+                            <span class="d-md-none collapse" id="memory">{{ memory }}</span>
+                            <span class="d-none d-md-inline">{{ memory }}</span>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+
+{% endblock %}

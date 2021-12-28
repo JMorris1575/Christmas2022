@@ -1,0 +1,97 @@
+{% extends parent_template|default:"base.html" %}
+{% load static %}
+
+{% block content %}
+    <div class="card col-md-10 border-success mx-auto my-3 px-0">
+        <h2 class="card-header bg-success text-white">Send E-mails</h2>
+        <div class="card-body bg-white">
+            <h4 class="card-title text-success">Select family members to receive the e-mail:</h4>
+            <form action="{% url 'mail:send-mail' %}" method="post">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="text-success form-group pl-3">
+                            <input type="checkbox" class="form-check-input" id="select_all">
+                            <label class="form-check-label" for="select_all">Select All</label>
+                        </div>
+                        {% for user in users %}
+                            <div class="text-success form-group pl-3">
+                                <input type="checkbox" class="form-check-input family-member"
+                                       name="recipients" value="{{ user }}" id="{{ user }}"/>
+                                <label class="form-check-label" for="{{ user }}">
+                                    {{ user.first_name }} {{ user.last_name }}
+                                </label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="col-md-9">
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text bg-success text-white"><i class="fas fa-paperclip"></i></span>
+                            </div>
+                            <input type="text" class="form-control" placeholder="Subject" name="subject">
+                        </div>
+                        <div class="card border-success">
+                            <h4 class="card-header bg-success text-white">Message Body:</h4>
+                            <div class="card-body">
+                                <div class="row justify-content-center card-title text-success">
+                                    <div class="col-md-4 fine-print mb-1 mb-md-0">
+                                        These tags in the subject line or message will be replaced as shown:
+                                    </div>
+                                    <div class="col-md-4 fine-print">
+                                        [first] = first name<br>
+                                        [last] = last name<br>
+                                        [full] = full name<br>
+                                        [user] = username<br>
+                                        [pwd] = password
+                                    </div>
+                                </div>
+                                <div class="input-group mb-3">
+                                    <textarea class="form-control" name="message" rows="25"></textarea>
+                                </div>
+                                <div class="row justify-content-between px-3">
+                                    <button class="col-md-5 btn btn-outline-success"
+                                            type="submit" name="button" value="send">
+                                        Send
+                                    </button>
+                                    <button class="col-md-5 btn btn-outline-success"
+                                            type="submit" name="button" value="cancel">
+                                        Cancel
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block body %}
+    <script>
+
+        function toggleSelected(button) {
+            // toggles the 'selected' class in the given button, returns true if selected, false if not selected
+            if ($(button).hasClass('selected')) {
+                $(button).removeClass('selected');
+                return false;
+            } else {
+                $(button).addClass('selected');
+                return true;
+            }; // end if
+        }; // end toggleSelected
+
+        $(document).ready(function() {
+            $('#select_all').click(function() {
+                var selected = toggleSelected(this); // toggles 'selected' class and returns true if it is set
+                $(this).blur(); // turns off the highlighting of the clicked button
+                $('.family-member').each(function() {
+                    $(this).prop('checked', selected); // sets the checkbox to status of button
+                 });    // end family-member each
+             });    // end select_all click
+         });    // end document ready
+
+    </script>
+
+{% endblock %}

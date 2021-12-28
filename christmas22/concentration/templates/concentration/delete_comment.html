@@ -1,0 +1,26 @@
+{% extends parent_template|default:"base.html" %}
+{% load static %}
+
+{% block content %}
+    <div class="card col col-md-10 mx-auto mb-3 border-primary px-0">
+        <div class="info-box mb-3">
+            <h5 class="card-title">Confirm Deletion:</h5>
+            <p class="card-text">
+                Do you really want to delete the remark: "{{ comment.comment }}"?
+            </p>
+        </div>
+        <form action="{% url 'concentration:delete_comment' comment.pk %}" method="post">
+            {% csrf_token %}
+            <div class="row no-gutters">
+                <input type="hidden" name="next" value="{{ next_url }}">
+                <button class="btn btn-outline-success col-md-6" name='button' value='delete' type="submit">
+                    Yes, Delete It
+                </button>
+                <button class="btn btn-outline-success col-md-6" name="button" value="cancel" type="submit">
+                    No, Cancel Deletion
+                </button>
+            </div>
+        </form>
+    </div>
+
+{% endblock %}

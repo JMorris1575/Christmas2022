@@ -1,0 +1,71 @@
+{% extends parent_template|default:"base.html" %}
+{% load static %}
+
+{% block content %}
+    <div class="card col-md-10 mx-md-auto mb-3 px-0 border-success">
+        <h2 class="card-header bg-success text-white">Christmas Trivia Game</h2>
+        <div class="info-box m-3 h5">
+            <p class="card-title">Here are the rules:</p>
+            <ol>
+                <li>Questions must be answered in order.</li>
+                <li>Questions may only be answered once. You may see your previous answers, but you may not change
+                them.</li>
+                <li>Players must answer questions from their own knowledge without getting information from electronic
+                devices, books, or elsewhere.</li>
+                <li>The website will enforce rules 1 and 2. You are on the honor system for rule 3.</li>
+            </ol>
+        </div>
+        <hr>
+        <div class="col-md-10 mx-md-auto">
+            <div class="row justify-content-center">
+                <h2 class="mx-auto text-success">Player Rankings</h2>
+            </div>
+            {% if stats %}
+                {% for stat in stats %}
+                    {% if stat.type == "heading" %}
+                        <hr>
+                        <div class="row justify-content-center">
+                            <h3 class="text-success">{{ stat.value }}</h3>
+                        </div>
+                    {% else %}
+                        <div class="row justify-content-center">
+                            <h4 class="text-success">{{ stat.value.name }}:  {{ stat.value.percent }}</h4>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                <p class="text-success">No rankings yet available.</p>
+            {% endif %}
+        </div>
+        <hr>
+        <div class="col-md-10 mx-md-auto">
+                {% if user_attempts == 0 %}
+                    <div class="row justify-content-center mb-3">
+                        <a class="btn btn-outline-success text-center"
+                           href="{% url 'trivia:next_question' %}">First Question
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="row justify-content-around mb-3">
+                        <a class="btn btn-outline-success text-center"
+                           href="{% url 'trivia:next_question' %}">Next Question
+                        </a>
+                        <a class="btn btn-outline-success text-center"
+                           href="{% url 'trivia:previous' '2' %}">Review Results
+                        </a>
+                    </div>
+                {% endif %}
+                {% if user.is_superuser %}
+                    <hr>
+                    <div class="col-md-10 mx-md-auto">
+                        <div class="row justify-content-center mb-3">
+                            <a class="btn btn-outline-success text-center"
+                               href="{% url 'trivia:save_files' %}">Save Question and Answer Files
+                            </a>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

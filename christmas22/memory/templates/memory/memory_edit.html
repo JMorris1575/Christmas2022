@@ -1,0 +1,61 @@
+{% extends parent_template|default:"base.html" %}
+{% load static %}
+
+{% block content %}
+    <div class="card col-md-10 mx-md-auto mb-3 px-0 border-success">
+
+        <!-- Instructions -->
+        <h2 class="card-header bg-success text-white text-center">Enter/Edit Christmas Memories</h2>
+        <div class="info-box m-3 h5">
+            <p>
+                Enter or edit a memory you have of Christmas. It can be from your childhood or from more recent times,
+                just something you would like to share with the rest of us, and perhaps remind us of some of our own
+                memories. Click "Save" to enter your memory into the database to be displayed at random on each page
+                of the website and on the main memory page. Click "Cancel" to return to the main memory page.
+            </p>
+        </div>
+
+        <!-- Entry Form -->
+        <div class="card-body">
+            {% if error_message %}
+                <div class="text-danger">
+                    <p><strong>{{ error_message }}</strong></p>
+                </div>
+            {% endif %}
+            {% if not current_memory %}
+                <form action="{% url 'memory:create' %}" method="post">
+                    {% csrf_token %}
+                    <div class="form-group col-md-10 mx-md-auto mt-3">
+                        <label for="new_memory_text">Enter your memory below:</label>
+                        <textarea class="form-control" id="new_memory_text"
+                                  name="memory_text" rows="3" autofocus></textarea>
+                    </div>
+                    <div class="row justify-content-around">
+                        <button class="btn btn-outline-success btn-lg"
+                                type="submit" name="button" value="save">Save</button>
+                        <button class="btn btn-outline-success btn-lg"
+                                type="submit" name="button" value="cancel">Cancel</button>
+                    </div>
+                </form>
+            {% else %}
+                <form action="{% url 'memory:edit' current_memory.id %}" method="post">
+                    {% csrf_token %}
+                    <div class="form-group col-md-10 mx-md-auto mt-3">
+                        <label for="memory_text">Enter your memory below:</label>
+                        <textarea class="form-control" id="memory_text"
+                                  name="memory_text" rows="3" autofocus>{{ current_memory.memory }}</textarea>
+                    </div>
+                    <div class="row justify-content-around">
+                        <button class="btn btn-outline-success btn-lg"
+                                type="submit" name="button" value="save">Save</button>
+                        <button class="btn btn-outline-success btn-lg"
+                                type="submit" name="button" value="delete">Delete</button>
+                        <button class="btn btn-outline-success btn-lg"
+                                type="submit" name="button" value="cancel">Cancel</button>
+                    </div>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+
+{% endblock %}

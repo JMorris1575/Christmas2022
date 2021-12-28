@@ -1,0 +1,54 @@
+{% extends parent_template|default:"base.html" %}
+{% load static %}
+
+{% block content %}
+    <div class="card col-md-10 mx-md-auto mb-3 px-0 border-success">
+
+        <!-- Instructions -->
+        <h2 class="card-header bg-success text-white">Christmas Memories</h2>
+        <div class="info-box m-3 h5">
+            <p>Click on the names below to see the memories they've added, or click the "Add Memory" button
+            to add your own Christmas memories.</p>
+        </div>
+
+        <!-- Accordian Section -->
+        <div class="accordian" id="family_accordian">
+            {% for item in collection %}
+                <div class="card">
+                    <div class="card-header" id="{{ item.user }}_heading">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#{{ item.user }}_memories">
+                                <!-- from https://stackoverflow.com/questions/28076169/django-check-a-last-character-in-python-string -->
+                                {% if item.name|default:""|slice:"-1:" == "s" %}
+                                    {{ item.name }}' Memories...
+                                {% else %}
+                                    {{ item.name }}'s Memories...
+                                {% endif %}
+                            </button>
+                        </h5>
+                    </div>
+                    <div id="{{ item.user }}_memories" class="collapse" data-parent="#family_accordian">
+                        <div class="card-body">
+                            {% for memory in item.memories %}
+                                <p class="pl-1 pl-md-5">
+                                    {{ memory }}
+                                    {% if memory.user == user %}
+                                        <a href="{% url 'memory:edit' memory.id %}"> (Edit...)</a>
+                                    {% endif %}
+                                </p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Add Memory Button -->
+        <div class="row justify-content-center my-3">
+            <a class="btn btn-outline-success" href="{% url 'memory:create' %}">
+                Add Memory
+            </a>
+        </div>
+    </div>
+{% endblock %}

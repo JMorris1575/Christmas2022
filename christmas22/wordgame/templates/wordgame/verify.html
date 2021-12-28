@@ -1,0 +1,49 @@
+{% extends parent_template|default:"base.html" %}
+{% load static %}
+
+{% block content %}
+    <div class="row justify-content-around mb-3">
+        <div class="card col-md-10 text-success border-success pb-2">
+            <h3 class="card-header bg-success text-white text-center px-0">{{ rejected|length }} Words to Check:</h3>
+            <form action="{% url 'wordgame:verify' %}" method="post">
+                {% csrf_token %}
+                <table class="table text-center text-success">
+                    <thead>
+                        <tr>
+                            <th scope="col">Start Word</th>
+                            <th scope="col">Player Word</th>
+                            <th scope="col">Accept</th>
+                            <th scope="col">Reject</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for word in rejected %}
+                            <tr>
+                                <th scope="row">{{ word.start_word }}</th>
+                                <td>{{ word.word }}</td>
+                                <td>
+                                    <input type="checkbox" class="form-check-input"
+                                           name="accept" value="{{ word.word }}"/>
+                                </td>
+                                <td>
+                                    <input type="checkbox" class="form-check-input"
+                                           name="reject" value="{{ word.word }}"/>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <div class="row justify-content-between px-3">
+                    <button class="col-md-5 btn btn-outline-success"
+                            type="submit" name="button" value="ok">
+                        OK
+                    </button>
+                    <button class="col-md-5 btn btn-outline-success"
+                            type="submit" name="button" value="cancel">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

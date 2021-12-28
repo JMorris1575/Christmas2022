@@ -1,0 +1,33 @@
+{% extends parent_template|default:"base.html" %}
+{% load static %}
+
+{% block content %}
+    <div class="card col col-md-10 mx-auto mb-3 border-primary px-0">
+        <img class="card-img-top" src="{% static gift.get_image_filename %}" alt="Image of {{ gift }}">
+        <div class="card-body">
+            <div class="row card-title justify-content-between">
+                {% if gift.selected %}
+                    <div class="h4 text-primary d-sm-inline col-sm-5">{{ gift }}</div>
+                    <div class="h5 text-primary d-sm-inline col-sm-5 text-sm-right">Selected by {{ gift.receiver_name }}</div>
+                {% else %}
+                    <div class="h4 text-success d-sm-inline col-sm-5">{{ gift }}</div>
+                    <div class="h5 text-success d-sm-inline col-sm-5 text-sm-right">Currently Unselected</div>
+                {% endif %}
+            </div>
+            {% for comment in comments %}
+                {% if comment == selected_comment %}
+                    <p class="card-text comment font-weight-bold">{{ comment.display }}</p>
+                {% else %}
+                    <p class="card-text comment">
+                        {{ comment.display }}
+                        <a href="{% url 'gift:edit_comment' gift.gift_number comment.pk %}?next={{ next_url }}"> (Edit...)</a>
+                    </p>
+                {% endif %}
+            {% endfor %}
+            <div class="info-box mb-3">
+                {% block gift-detail-page-specific-content %}
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

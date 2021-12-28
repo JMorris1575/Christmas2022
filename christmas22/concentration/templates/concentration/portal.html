@@ -1,0 +1,108 @@
+{% extends parent_template|default:"base.html" %}
+{% load static %}
+
+{% block content %}
+
+    <div class="card col-md-10 mx-md-auto mb-3 px-0 border-success">
+        <h2 class="card-header bg-success text-white">Christmas Concentration Game</h2>
+        <div class="card-body">
+            <p class="text-success">
+                Well, I think I've got it working after a fashion. Not perfectly, but better than nothing. This is
+                really a proof of concept type of thing to see if I can write regular computer games for use on the web.
+            </p>
+            <form class="col-md-4 mx-auto" action="{% url 'concentration:game' %}" method="post">
+                {% csrf_token %}
+                <button class="btn btn-outline-info btn-block">
+                    Play Concentration
+                </button>
+            </form>
+            <hr class="bg-success">
+            <div class="row">
+                <div class="col-md-6">
+                    <img class="w-100" src="{% static 'concentration\images\FullLayout.png' %}">
+                </div>
+                <div class="col-md-6">
+                    <p class="text-success">
+                        To play, click one of the numbered squares to reveal the "prize" underneath. Click another
+                        square to try to match prizes. If the prizes don't match, click again and the board returns
+                        to its former state. If they do match, several things happen. The prize appears on your
+                        list at the left, its value is added to your score and, when you click again, two
+                        pieces of the puzzle are revealed. You get ten seconds to decide if you can solve it.
+                        If so, click the "Solve" button and enter your solution in the box that appears at the
+                        bottom. If you are right the current Puzzle Bonus is added to your score and the game is
+                        over. If not, click again and the board returns to its former state. As you play the game,
+                        the status area at the bottom will remind you of what to do next.
+                    </p>
+                </div>
+            </div>
+            <hr class="bg-success">
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="text-success">
+                        Each puzzle will combine pictures, letters, and words to spell out something familiar. For
+                        instance, the puzzle at the right starts with the sound of the letter "b", adds the
+                        highlighted East indicator on a weather vane, spells out the word "of", shows a bird and
+                        adds the sound of the letter "N". So, we get b + East of bird + n, or Beast of Burden.
+                        Quotes around a letter means the name of the letter, as is often done in texting. Thus "R"
+                        can represent the word "are." When checking solutions the program isn't fussy about UPPER
+                        CASE or lower case, or extra spaces between the words. It is VERY fussy about spelling and
+                        punctuation however. If a word has an apostrophe, you've got to have that apostrophe in your
+                        solution. All of the puzzles in Christmas Concentration will be related to Christmas, of
+                        course.
+                    </p>
+                </div>
+                <div class="col-md-6">
+                    <img class="w-100" src="{% static 'concentration\images\Ed3Puz03.png' %}">
+                </div>
+            </div>
+            <hr class="bg-success">
+            <div class="row">
+                <div class="row">
+                    <img class="col-md-3 w-100" src="{% static 'concentration\images\WildCard.png' %}">
+                    <img class="col-md-3 w-100" src="{% static 'concentration\images\Forfeit.png' %}">
+                    <img class="col-md-3 w-100" src="{% static 'concentration\images\Take.png' %}">
+                    <img class="col-md-3 w-100" src="{% static 'concentration\images\SneakPeek.png' %}">
+                </div>
+                <div class="card-title text-success">
+                    <h5>There are some special "prize" cards to know about:</h5>
+                </div>
+                <ol>
+                    <li class="text-success">
+                        <p class="text-success">
+                            There are two WILD CARDs in every game. A wild card matches anything, including
+                            another wild card. Most of the time the wild cards in a game will end up
+                            matching different prizes, so there will be two uncovered squares at the end of
+                            the game.
+                        </p>
+                    </li>
+                    <li class="text-success">
+                        <p class="text-success">
+                            There are four FORFEIT ONE GIFT cards in every game. Matching them means that you
+                            have to select one of the gifts in your list, which will be highlighted in red, to
+                            give up. The points for that prize will be subtracted from your score. If you
+                            don't yet have any prizes, nothing happens -- lucky you!
+                        </p>
+                    </li>
+                    <li class="text-success">
+                        <p class="text-success">
+                            There are four TAKE ONE GIFT cards in every game. Matching them means that you get
+                            to select a gift from a set of gifts that do not appear in this game. A window will
+                            appear with a list of five items to choose from. Select the one you think will be
+                            worth the most points.
+                        </p>
+                    </li>
+                    <li class="text-success">
+                        <p class="text-success">
+                            There are two SNEAK PEEK cards in every game. Matching them means that after the
+                            two puzzle pieces are revealed, and you get a chance to solve the puzzle, you will
+                            get to select another covered square to briefly take a look at the puzzle piece
+                            underneath it. If you think you know the puzzle before peeking, though, go ahead
+                            and guess it. The Puzzle Bonus decreases a little after a Peek.
+                        </p>
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends parent_template|default:"base.html" %}
+{% load static %}
+
+{% block content %}
+    <div class="card col col-md-10 mx-auto mb-3 border-primary px-0">
+        <h5 class="card-title">Edit or Delete Your Remark</h5>
+        <p class="card-text">
+            To edit your remark, enter the new text in the entry box below and click the 'Save Changes' button.
+            To delete it click the 'Delete...' button and confirm the deletion on the page that appears. To
+            change nothing and return to the previous page simply click the 'Cancel' button.
+        </p>
+        <form action="{% url 'concentration:edit_comment' comment.pk %}" method="post">
+            {% csrf_token %}
+            <textarea class="col mb-3" id="comment" name="comment_text">{{ comment.comment }}</textarea>
+            <div class="row no-gutters">
+                <button class="btn btn-outline-success col-md-4" type="submit"
+                        name="button" value="save">Save Changes</button>
+                <button class="btn btn-outline-success col-md-4" type="submit"
+                        name="button" value="delete">Delete...</button>
+                <button class="btn btn-outline-success col-md-4" type="submit"
+                        name="button" value="cancel">Cancel</button>
+            </div>
+        </form>
+    </div>
+
+{% endblock %}

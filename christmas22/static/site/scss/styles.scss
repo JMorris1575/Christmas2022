@@ -1,0 +1,113 @@
+@import 'custom.scss';
+@import "../bootstrap/scss/bootstrap";
+
+// SCSS Variables
+
+$color-yellow-gold: #ffdd55;
+$color-header-link: rgba(255, 221, 85, 0.8) !important;
+$color-header-link-hover: rgba(255, 221, 85, 1.0) !important;
+
+header, footer {
+    background: $primary;
+    color: $secondary;
+}
+
+header a {
+    color: $color-header-link;
+    text-decoration: none;
+}
+
+header a:hover {
+    color: $color-header-link-hover;
+    text-decoration: none;
+}
+
+header img {
+    vertical-align: top;
+    opacity: 0.9;
+}
+
+header img:hover {
+    opacity: 1.0;
+}
+
+header .nav-link {
+    padding-top: 0;
+}
+
+.comment {
+    font-family: serif;
+    font-style: italic;
+    color: blue;
+    margin-bottom: 0.5rem;
+}
+
+.fine-print {
+    font-size: 75%;
+}
+
+.gift-button {
+    width: 100%;
+}
+
+.gift-card {
+    border: 3px solid;
+    border-radius: 1rem;
+}
+
+.gift-card img {
+    border-top-left-radius: 0.75rem;
+    border-top-right-radius: 0.75rem;
+}
+
+.gift-img {
+    border-width: 3px !important;
+}
+
+.header-text {
+    font-family: 'Great Vibes', cursive;
+    font-size: 4rem;
+}
+
+.info-box {
+    padding: 1rem;
+    border: 3px solid $success;
+}
+
+.info-box p:last-child {
+    margin-bottom: 0;
+}
+
+.memory {
+    font-family: serif;
+    font-size: 1.2rem;
+    font-style: italic;
+    border: 1px solid $success;
+    color: $success;
+    background: white url('../images/faux-parchment-texture-by-brewster.jpg') repeat-x;
+}
+
+.navbar-toggler {
+    border: none;
+}
+
+.navbar-toggler:focus {
+    outline: none;
+}
+
+.navbar-toggler-icon {
+    color: $secondary;
+}
+
+.preserve-whitespace {
+    white-space: pre-wrap;
+}
+
+.recipe-option {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.text-blue {
+    color: blue;
+}

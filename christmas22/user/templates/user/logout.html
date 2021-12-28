@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <div class="card col-md-8 mx-md-auto my-3 p-0">
+        <div class="card-header text-center bg-primary">
+            <h3 class="text-secondary">Thanks for visiting the Family Christmas Website!</h3>
+        </div>
+        <div class="card-body mx-auto">
+            <div class="card-title text-primary">
+                <span class="h5">Click the button below to log back in.</span>
+            </div>
+            <div class="row card-text">
+                <a href="{% url 'user:login' %}" type="button" class="btn btn-primary text-secondary mx-auto my-3">
+                    Log Back In.
+                </a>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

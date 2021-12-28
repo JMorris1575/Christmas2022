@@ -1,0 +1,22 @@
+{% extends parent_template|default:"base.html" %}
+{% load static %}
+
+{% block content %}
+    <div class="card col-md-10 mx-md-auto mb-3 px-0 border-success">
+        <h2 class="card-header bg-success text-white">End of Questions</h2>
+        <div class="card-body">
+            <div class="info-box m-3 h5">
+                <p class="card-title text-success">
+                    You have completed all of the questions I have at the moment. Check back later to see if I've
+                    added any more.
+                </p>
+            </div>
+            <hr>
+            <div class="row justify-content-center">
+                <a class="btn btn-outline-success btn-lg col-6 col-md-3" href="{% url 'trivia:scoreboard' %}">
+                    Scoreboard
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

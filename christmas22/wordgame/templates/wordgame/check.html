@@ -1,0 +1,10 @@
+{% extends parent_template|default:"base.html" %}
+{% load static %}
+
+{% block content %}
+
+    {% for word in word_list %}
+        <p>{{ word.word }}     {{ word.explanation }}</p>
+    {% endfor %}
+
+{% endblock %}

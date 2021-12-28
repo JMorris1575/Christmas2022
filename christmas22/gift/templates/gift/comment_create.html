@@ -1,0 +1,27 @@
+{% extends parent_template|default:"base.html" %}
+{% load static %}
+
+{% block content %}
+    <div class="card col-md-8 mx-md-auto p-0">
+        <div class="card-header text-center bg-primary">
+            <h3 class="text-secondary">Guesses or Comments</h3>
+        </div>
+        <img class="card-img-top" src="{% static gift.get_image_filename %}" alt="Image of {{ gift }}">
+        <div class="card-body">
+            <div class="h4 text-success col-md-10 mt-3 mx-md-auto">{{ gift.description }}</div>
+            {% for comment in gift.get_comments %}
+                <p class="col-md-10 text-blue card-text mx-md-auto">{{ comment.display }}</p>
+            {% endfor %}
+            <form action="{% url 'gift:add_comment' gift.gift_number %}" method="post">
+                {% csrf_token %}
+                <div class="form-group col-md-10 mx-md-auto mt-3">
+                    <label for="comment">Enter a new guess or comment below:</label>
+                    <textarea class="form-control" id="comment" name="comment_text" rows="3"></textarea>
+                </div>
+                <div class="col-12 text-center">
+                    <button class="btn-outline-success btn-lg text-center" type="submit">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

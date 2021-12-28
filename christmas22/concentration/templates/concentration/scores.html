@@ -1,0 +1,48 @@
+{% extends parent_template|default:"base.html" %}
+{% load static %}
+
+{% block content %}
+
+    <h2>
+        <p class="text-success mx-auto">
+            {{ msg }}
+        </p>
+    </h2>
+    <p class="text-danger">
+        You may notice two of your browser tabs point to the Christmas website. You can delete the one containing the
+        now inoperative, game if you don't need it to check your score to include below.
+    </p>
+    <form action="{% url 'concentration:scores' %}" method="post">
+        {% csrf_token %}
+        <div class="form-group col-md-12 mx-md-auto my-3">
+            <label for="comment_entry">
+                <h4 class="text-success">
+                    Don't give any puzzles away but use the box below to tell us how you did.
+                    What was your score? Did you solve the puzzle? Did you encounter any bugs
+                    I should know about?
+                </h4>
+            </label>
+            <textarea class="form-control" id="comment_entry" name="comment" rows="1"></textarea>
+            <div class="d-flex justify-content-end">
+                <button class="btn btn-outline-success mt-1 btn-sm" type="submit" name="button" value="comment">
+                    Add Comment
+                </button>
+            </div>
+        </div>
+    </form>
+    {% if comments %}
+        {% for comment in comments %}
+            {% if comment.user == user %}
+                <p class="comment px-4">
+                    {{ comment.user }} says: {{ comment.comment }}
+                    <a href="{% url 'concentration:edit_comment' comment.pk %}"> (Edit...)</a>
+                </p>
+            {% else %}
+                <p class="comment px-4">
+                    {{ comment.user }} says: {{ comment.comment }}
+                </p>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+
+{% endblock %}

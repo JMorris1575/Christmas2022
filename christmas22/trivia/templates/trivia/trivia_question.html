@@ -1,0 +1,32 @@
+{% extends parent_template|default:"base.html" %}
+{% load static %}
+
+{% block content %}
+    <div class="row">
+        <div class="card col-md-10 mx-md-auto px-0 border-success">
+            <h2 class="card-header bg-success text-white">Trivia Question: {{ question.number }}</h2>
+            <div class="card-body">
+                <form action="{% url 'trivia:display_question' question.number %}" method="post">
+                    {% csrf_token %}
+                    <h3 class="card-title text-success">{{ question }}</h3>
+                    {% if error_message %}
+                        <div class="text-danger">
+                            <p><strong>{{ error_message }}</strong></p>
+                        </div>
+                    {% endif %}
+                    {% for choice in choices %}
+                        <div class="form-check">
+                            <label class="form-check-label text-success mb-3 ml-sm-3 ml-md-5">
+                                <input class="form-check-input" type="radio" name="choice" value={{ choice.id }}>
+                                {{ choice }}
+                            </label>
+                        </div>
+                    {% endfor %}
+                    <div class="row justify-content-center">
+                        <input class="btn btn-outline-success btn-lg mt-3" type="submit" value="Submit" name="trivia_submit"/>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

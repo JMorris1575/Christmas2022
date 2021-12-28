@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <div class="card col-md-8 my-3 mx-md-auto p-0">
+        <div class="card-header text-center bg-primary">
+            <h3 class="mt-2 text-secondary">Welcome to the Family Christmas Website</h3>
+        </div>
+        <div class="card-body">
+            <h5 class="card-title text-primary">
+                Enter the Username and Password you were given. Both are case-sensitive.
+            </h5>
+
+            {% if form.errors %}
+                <p class="text-danger">Your username and password did not match. Please try again.</p>
+            {% endif %}
+
+            {% if next %}
+                {% if user.is_authenticated %}
+                    <p class="text-danger">Your account doesn't have access to this page. To proceed, please login with an
+                    account that has access.</p>
+                {% else %}
+                    <p class="text-danger">Please login to see the page you seek.</p>
+                {% endif %}
+            {% endif %}
+
+            <form method="post" action="{% url 'user:login' %}">
+                {% csrf_token %}
+                <div class="input-group input-group-lg my-3 px-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text bg-primary text-secondary">
+                            <i class="fas fa-user"></i>
+                        </span>
+                    </div>
+                    <input type="text" name="username" autocomplete="off" id="id_username" required
+                           class="form-control" placeholder="Username">
+                </div>
+                <div class="input-group input-group-lg my-3 px-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text bg-primary text-secondary">
+                            <i class="fas fa-key"></i>
+                        </span>
+                    </div>
+                    <input type="password" name="password" id="id_password" required class="form-control">
+                </div>
+                <div class="input-group input-group-lg my-3 px-3">
+                    <input type="submit" value="Login" class="btn btn-primary text-secondary btn-block btn-lg">
+                    <input type="hidden" name="next" value="{{ next }}">
+                </div>
+            </form>
+        </div>
+    </div>
+
+{% endblock %}

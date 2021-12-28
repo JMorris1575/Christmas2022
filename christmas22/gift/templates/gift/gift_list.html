@@ -1,0 +1,112 @@
+{% extends parent_template|default:"base.html" %}
+{% load static %}
+
+{% block content %}
+    <div class="row mx-1 mx-md-5 mb-3 info-box text-blue">
+        <a class="d-md-none" data-toggle="collapse" href="#welcome"><span>Welcome... </span></a>
+        <div class="d-md-none collapse" id="welcome">
+            <p><i>What do you think these might be? Click on the "Remark" button to make your guess or to make other
+                comments to share with the family. Be sure to select one of the gifts. Don't forget you can change
+                your mind later. As usual, the little black thing in the pictures is my camera's lens cap. It is 2 1/4"
+                across and is there to give an idea of package sizes.</i></p>
+        </div>
+        <div class="d-none d-md-inline">
+            <p><i>What do you think these might be? Click on the "Remark" button to make your guess or to make other
+                comments to share with the family. Be sure to select one of the gifts. Don't forget you can change
+                your mind later. As usual, the little black thing in the pictures is my camera's lens cap. It is 2 1/4"
+                across and is there to give an idea of package sizes.</i></p>
+        </div>
+    </div>
+    <div class="row px-3">
+        {% for gift in gifts %}
+            <div class="card col-12 pb-3 mb-3">
+                <div class="row">
+                    <!-- Left Column or Top Line: gift image and caption -->
+                    <div class="col-sm-4 col-md-3 pl-0">
+                        {% if gift.selected %}
+                            <a href="{% url 'gift:gift_detail' gift.gift_number %}" title="Click for larger image.">
+                                <img class="w-100 border border-primary gift-img d-none d-md-block"
+                                     src="{% static gift.get_image_filename %}" alt="Image of {{ gift }}">
+                            </a>
+                            <h4 class="text-primary">{{ gift }}
+                                <a class="d-inline d-md-none" href="{% url 'gift:gift_detail' gift.gift_number %}">
+                                    See it...
+                                </a>
+                            </h4>
+                            <p class="text-primary mx-auto">Selected by {{ gift.receiver_name }}</p>
+                        {% else %}
+                            <a href="{% url 'gift:gift_detail' gift.gift_number %}" title="Click for larger image.">
+                                <img class="w-100 border border-success gift-img d-none d-md-block"
+                                     src="{% static gift.get_image_filename %}" alt="Image of {{ gift }}">
+                            </a>
+                            <h4 class="text-success">{{ gift }}
+                                <a class="d-inline d-md-none" href="{% url 'gift:gift_detail' gift.gift_number %}">
+                                    See it...
+                                </a>
+                            </h4>
+                            <p class="text-success mx-auto">Unselected</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Middle Column or Middle Line: gift clue and comments -->
+                    <div class="col-sm">
+                        <p class="text-success">{{ gift.description|safe }}</p>
+                        {% if gift.get_comments %}
+                            {% if gift.get_comments|length > 4 %}
+                                <a data-toggle="collapse" href="#Gift{{ gift.gift_number }}_remarks">Toggle remarks...</a>
+                                <div class="collapse" id="Gift{{ gift.gift_number }}_remarks">
+                                    {% for comment in gift.get_comments %}
+                                        {% if comment.user == user %}
+                                            <p class="comment">
+                                                {{ comment.display }}
+                                                <a href="{% url 'gift:edit_comment' gift.gift_number comment.pk %}"> (Edit...)</a>
+                                            </p>
+                                        {% else %}
+                                            <p class="comment">{{ comment.display }}</p>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {% for comment in gift.get_comments %}
+                                    {% if comment.user == user %}
+                                        <p class="comment">
+                                            {{ comment.display }}
+                                            <a href="{% url 'gift:edit_comment' gift.gift_number comment.pk %}"> (Edit...)</a>
+                                        </p>
+                                    {% else %}
+                                        <p class="comment">{{ comment.display }}</p>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                        {% endif %}
+                    </div>
+
+                    <!-- Third Column or Third Line: Buttons -->
+                    <div class="col-sm-3 col-md-2 mt-3">
+                        {% if gift.selected %}
+                            <form action="{% url 'gift:change_mind' gift.gift_number %}" method="post">
+                                {% csrf_token %}
+                                {% if gift.receiver == user %}
+                                    <button class="btn btn-outline-success btn-block"
+                                            type="submit" name="button" value="change">Change</button>
+                                {% endif %}
+                                <button class="btn btn-outline-success btn-block"
+                                        type="submit" name="button" value="remark">Remark</button>
+                            </form>
+                        {% else %}
+                            <form action="{% url 'gift:select' gift.gift_number %}" method="post">
+                                {% csrf_token %}
+                                {% if not user_has_gift %}
+                                    <button class="btn btn-outline-success btn-block"
+                                            type="submit" name="button" value="select">Select</button>
+                                {% endif %}
+                                <button class="btn btn-outline-success btn-block"
+                                        type="submit" name="button" value="remark">Remark</button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

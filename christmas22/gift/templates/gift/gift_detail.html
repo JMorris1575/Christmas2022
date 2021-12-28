@@ -1,0 +1,37 @@
+{% extends parent_template|default:"gift/base_gift_detail.html" %}
+{% load static %}
+
+{% block gift-detail-page-specific-content %}
+        {% if gift.selected  %}
+            <form action="{% url 'gift:change_mind' gift.gift_number %}" method="post">
+                {% csrf_token %}
+                <div class="row no-gutter justify-content-between">
+                    {% if gift.receiver == user %}
+                        <button class="btn btn-outline-success btn-lg col-sm-4 mt-3 mt-sm-0 mx-3"
+                                type="submit" name="button" value="change">Change Mind</button>
+                    {% else %}
+                        <div class="col-sm-4"></div>        <!-- place holder for missing button -->
+                    {% endif %}
+                    <button class="btn btn-outline-success btn-lg col-sm-4 mt-3 mt-sm-0 mx-3"
+                            type="submit" name="button" value="remark">Add Remark</button>
+                </div>
+            </form>
+        {% else %}
+            <form action="{% url 'gift:select' gift.gift_number %}" method="post">
+                {% csrf_token %}
+                <div class="row no-gutter justify-content-between">
+                    {% if not user_has_gift %}
+                        <button class="btn btn-outline-success btn-lg col-sm-4 mt-3 mt-sm-0"
+                                type="submit" name="button" value="select">Select</button>
+                    {% else %}
+                        <div class="col-sm-4"></div>        <!-- place holder for missing button -->
+                    {% endif %}
+                    <button class="btn btn-outline-success btn-lg col-sm-4 mt-3 mt-sm-0 mx-3"
+                            type="submit" name="button" value="remark">Add Remark</button>
+                </div>
+            </form>
+        {% endif %}
+        <div class="text-center">
+            <a class="btn btn-outline-success btn-block btn-lg" href="{% url 'gift:home' %}">Return to Gift List</a>
+        </div>
+{% endblock %}

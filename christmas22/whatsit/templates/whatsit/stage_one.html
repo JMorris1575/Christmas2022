@@ -1,0 +1,86 @@
+{% extends parent_template|default:"base.html" %}
+{% load static %}
+
+{% block content %}
+    <div class="card border-success col-md-10 mx-md-auto mb-3 px-0">
+        <h2 class="card-header bg-success text-white text-center">
+            Enter or Edit your description for {{ object }}.
+        </h2>
+
+        <!-- Image -->
+        <div class="row">
+            <img class="col" src="{% static object.image_filename %}">
+        </div>
+
+        <!-- Expandable Instructions -->
+        <a data-toggle="collapse" href="#description"><h3>Show/Hide Instructions...</h3></a>
+        <div class="row info-box m-3 h5 text-success collapse" id="description">
+            <p>
+                Write a convincing description of the object shown above whether or not you know what it is. Your
+                description can contain anything that might be in a museum description of the item: what it is, what it
+                is (or was) used for, how it works, any history this object, or this type of object, might have. In the
+                next part of the game people will vote on the description they thought most convincing so do your best
+                to sound like you know what you're talking about even if you're just making the whole thing up. By the
+                way, descriptions are limited to 500 characters counting spaces and punctuation.
+            </p>
+            <p>
+                For example, if the object displayed was a dinner fork you might describe it as follows: "This tool was
+                used by old-time upholsterers to pry up the tacks used to fasten material to pieces of furniture. The
+                tacks could be quite close together in those days and this allowed the upholsterer to pry up several
+                of them at once."
+            </p>
+            <p>
+                To keep the voting fair in the next step, don't give any information that would identify you as the
+                author of the description. Once I get several descriptions we will start the voting phase of the game.
+            </p>
+        </div>
+
+        <!-- Entry Form -->
+        <div class="card-body">
+            {% if error_message %}
+                <div class="text-danger">
+                    <p><strong>{{ error_message }}</strong></p>
+                </div>
+            {% endif %}
+            {% if not description %}
+                <form action="{% url 'whatsit:object_view' object.number %}" method="post">
+                    {% csrf_token %}
+                    <div class="form-group col-md-10 mx-md-auto mt-3 text-success">
+                        <label for="new_description_text">
+                            In the space below, write a convincing, possibly true, description of the object above:
+                        </label>
+                        <textarea class="form-control" id="new_description_text"
+                                  name="description_text" rows="3" autofocus></textarea>
+                    </div>
+                    <div class="row justify-content-around">
+                        <button class="btn btn-outline-success btn-lg col-md-4"
+                                type="submit" name="button" value="cancel">Cancel</button>
+                        <button class="btn btn-outline-success btn-lg col-md-4"
+                                type="submit" name="button" value="save">Save</button>
+                    </div>
+                </form>
+            {% else %}
+                <form action="{% url 'whatsit:object_view' object.number %}" method="post">
+                    {% csrf_token %}
+                    <div class="form-group col-md-10 mx-md-auto mt-3 text-success">
+                        <label for="description_text">
+                            You may edit or delete your description, or Cancel to return to the selection page:
+                        </label>
+                        <textarea class="form-control" id="description_text"
+                                  name="description_text" rows="3" autofocus>{{ description.description }}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <div class="row justify-content-around">
+                            <button class="btn btn-outline-success btn-lg col-md-3"
+                                    type="submit" name="button" value="cancel">Cancel</button>
+                            <button class="btn btn-outline-success btn-lg col-md-3"
+                                    type="submit" name="button" value="delete">Delete</button>
+                            <button class="btn btn-outline-success btn-lg col-md-3"
+                                    type="submit" name="button" value="save">Save Changes</button>
+                        </div>
+                    </div>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

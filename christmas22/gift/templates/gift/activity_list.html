@@ -1,0 +1,83 @@
+{% extends parent_template|default:"base.html" %}
+{% load static %}
+
+{% block content %}
+    <div class="card border-success col-md-10 mx-md-auto mb-3 px-0">
+        <h2 class="card-header bg-success text-white">
+            Choose an Activity
+        </h2>
+        <h4 class="card-title text-success mt-3 mb-0 px-5">
+            This page launches Christmas games and activities for us to enjoy. Check back from time to time
+            to see if I've added anything new.
+        </h4>
+        <div class=" card-body text-success pt-0">
+            <hr>
+            <div class="row">
+                <div class="col-md-8 card-text">
+                    <h5>Trivia Game</h5>
+                    <p>
+                        Compete with other family members for the best score in a Christmas Trivial game. You're on
+                        the honor system here. No fair asking Alexa or Siri or whatever other cybernetic voices there
+                        may be, and no looking things up in books or on the internet. Just trust your own mind.
+                    </p>
+                </div>
+                <div class="col-md-4 mt-3 mt-md-0">
+                    <a class="btn btn-outline-info btn-block" href="{% url 'trivia:scoreboard' %}">Play Trivia Game</a>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-md-8 card-text">
+                    <h5>What Is It?</h5>
+                    <p>
+                        Ever hear of a game called "Fictionary?" This is something like it. Given a picture of a not
+                        exactly everyday object, try to convince people that you know what it is. Then, seeing only the
+                        descriptions, not their authors, vote for what you think is the most believable one that is not
+                        your own. Finally the authors, the votes and the actual description of the object will all be
+                        revealed.
+                    </p>
+                </div>
+                <div class="col-md-4 mt-3 mt-md-0">
+                    <a class="btn btn-outline-info btn-block" href="{% url 'whatsit:object_list' %}">
+                        Play What Is It?
+                    </a>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-md-8 card-text">
+                    <h5>Christmas Word Game</h5>
+                    <p>
+                        Make as many English words as you can from the letters in the given Christmas words. A new
+                        word will appear every day up until and including Christmas Eve. Make comments as if this were
+                        an in-person game.
+                    </p>
+                </div>
+                <div class="col-md-4 mt-3 mt-md-0">
+                    <a class="btn btn-outline-info btn-block" href="{% url 'wordgame:entry' %}">
+                        Play the Christmas Word Game
+                    </a>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-md-8 card-text">
+                    <h5>Christmas Concentration</h5>
+                    <p>
+                        This game is based on an old television show I loved in my younger years. Select numbered
+                        squares to match prizes. As you make more and more matches you will see more and more parts of
+                        a rebus puzzle. It will be a picture puzzle to convey some Christmas-related words or phrase.
+                        You score points by matching the highest scoring prizes and getting the puzzle correct with the
+                        fewest pieces showing.
+                    </p>
+                </div>
+                <div class="col-md-4 mt-3 mt-md-0">
+                    <a class="btn btn-outline-info btn-block" href="{% url 'concentration:portal' %}">
+                        Play Christmas Concentration
+                    </a>
+                </div>
+            </div>
+            <hr>
+        </div>
+    </div>
+{% endblock %}
