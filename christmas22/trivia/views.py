@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.views.generic import View
 from django.contrib.auth.models import User
+from django.conf import settings
 from django.urls import reverse
 
 from .models import TriviaQuestion, TriviaChoice, TriviaResponse
@@ -9,6 +10,8 @@ from user.models import get_adjusted_name
 from operator import itemgetter
 
 import utilities
+
+import os
 
 def get_next_question(user):
     next_question = len(TriviaResponse.objects.filter(user=user)) + 1
@@ -165,10 +168,10 @@ def save_trivia_view(request):
         if question.link:
             answer_list.append('See: ' + str(question.link) + '\n')
         answer_list.append('\n')
-    question_file = open('Christmas_Trivia_Questions.txt', 'w')
+    question_file = open(os.path.join(settings.BASE_DIR, 'Christmas_Trivia_Questions.txt', 'w'))
     question_file.writelines(question_list)
     question_file.close()
-    answer_file = open('Christmas_Trivia_Answers.txt', 'w')
+    answer_file = open(os.path.join(settings.BASE_DIR, 'Christmas_Trivia_Answers.txt', 'w'))
     answer_file.writelines(answer_list)
     answer_file.close()
     return redirect('trivia:scoreboard')

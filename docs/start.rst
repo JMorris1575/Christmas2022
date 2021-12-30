@@ -41,8 +41,20 @@ working well enough.
 
 .. _trivia_update:
 
-Plans for Updating the Way the Trivia Game Saves Question and Answer Files
-==========================================================================
+Updating the Way the Trivia Game Saves Question and Answer Files
+================================================================
+
+This was the easiest update and so the one I started with. All I had to do was add a couple of imports at the beginning
+of ``trivia/views.py`` and alter the ``open`` statements that set up writing to the files. Note the use of
+``os.path.join`` rather than just ``os.join`` (I had tried the latter first.)::
+
+    from django.conf import settings
+    import os
+
+    question_file = open(os.path.join(settings.BASE_DIR, 'Christmas_Trivia_Questions.txt', 'w'))
+    ...
+    answer_file = open(os.path.join(settings.BASE_DIR, 'Christmas_Trivia_Answers.txt', 'w'))
+
 
 .. _concentration_update:
 
@@ -94,3 +106,38 @@ Here are the steps I followed in starting the project:
 #. Enabled VCS in PyCharm using Git.
 #. Carefully added files to git (not secrets).
 #. Did first commit and first push.
+
+***************************************
+Moving the Project to the Home Computer
+***************************************
+
+Here is the process I followed to clone the Christmas2022 project onto my home computer:
+
+#. In a project that used Git, in this case Christmas2021, I selecte ``Git->Clone...`` from the menu and provided the
+   URL to github.
+#. After a little bit a yellow bar appeared at the top of the PyCharm edit screen telling me I had no Python Interpreter
+   configured. It offered me the chance to do so and I selected Python3.9 (venv).
+#. Unfortunately, it took (venv) from Christmas2021 as evidenced from doing ``which python`` in the Terminal.
+#. In ``File->Settings...`` I selected ``Python Interpreter`` and clicked the gear next to the box indicating the
+   Christmas2021 (venv). It allowed me to set up a virtual environment here on this computer.
+#. I had to exit the project and re-enter it before the correct venv could be used.
+#. ``pip install sphinx`` gave me version 4.3.2, as before.
+#. ``pip install django`` gave me version 4.0, as before.
+#. ``pip install psycopg2`` gave me version 2.9.3, which is different from before (2.9.2). This may give me a chance to
+   learn about upgrading programs through pip.
+#. Used ``dwseervice`` to download ``secrets.json`` from my Omen computer to ``config/settings`` in this project.
+#. Used PgAdmin 4 to create a local ``c22data`` database.
+#. Changed the ``DATABASE_PORT`` in ``secrets.json`` to 5434 as is needed on this machine.
+#. Performed ``python manage.py migrate`` without much problem. (I first forgot to get into the ``christmas22``
+   directory.
+#. Performed ``python manage.py loaddata 2021-12-28-all.json`` which happily installed 3902 objects from one fixture.
+#. Tested it with python manage.py runserver and it worked fine!
+
+Notes on Moving Sphinx
+======================
+
+When I tried ``make html`` without first doing a ``sphinx-quickstart`` it didn't work of course. It didn't have the
+``make.bat`` file. I used DWService to copy ``conf.py``, ``make.bat`` and ``Makefile`` to the home computer. It changed
+the name of ``make.bat`` to ``make.bat.txt`` and I had to change it back, but then ``make html`` worked perfectly well
+except it warned me to create a ``_static`` folder. I have added ``conf.py``, ``make.bat`` and ``Makefile`` to Git.
+
