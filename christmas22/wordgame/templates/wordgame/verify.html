@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block content %}
-    <div class="row justify-content-around mb-3">
+<div class="row justify-content-around mb-3" xmlns:width="http://www.w3.org/1999/xhtml">
         <div class="card col-md-8 text-success border-success px-0 pb-2">
             <h3 class="card-header bg-success text-white text-center px-0">{{ rejected|length }} Words to Check:</h3>
             <form action="{% url 'wordgame:verify' %}" method="post">
@@ -21,25 +21,25 @@
                                 <th scope="row">{{ word.start_word }}</th>
                                 <td>{{ word.word }}</td>
                                 <td>
-                                    <div class="btn-group" role="group" >
+                                    <div class="btn-group" role="group">
                                         <input type="radio" class="btn-check" name="{{ word.word }}" id="{{ word.word }}-1" value="accept"/>
-                                        <label class="btn btn-outline-success" for="{{ word.word }}-1">Accept</label>
+                                        <label class="btn btn-outline-success col-4 px-4" for="{{ word.word }}-1">Accept</label>
                                         <input type="radio" class="btn-check" name="{{ word.word }}" id="{{ word.word }}-2" value="reject"/>
-                                        <label class="btn btn-outline-danger" for="{{ word.word }}-2">Reject</label>
+                                        <label class="btn btn-outline-danger col-4 px-4" for="{{ word.word }}-2">Reject</label>
                                         <input type="radio" class="btn-check" name="{{ word.word }}" id="{{ word.word }}-3" value="wait"/>
-                                        <label class="btn btn-outline-info" for="{{ word.word }}-3">Wait</label>
+                                        <label class="btn btn-outline-info col-4 px-4" for="{{ word.word }}-3">Wait</label>
                                     </div>
                                 </td>
                             </tr>
                         {% endfor %}
                     </tbody>
                 </table>
-                <div class="row justify-content-between px-3">
-                    <button class="col-md-5 btn btn-outline-success mx-3"
+                <div class="row justify-content-around px-3">
+                    <button class="col-md-4 btn btn-outline-success mx-3"
                             type="submit" name="button" value="ok">
                         OK
                     </button>
-                    <button class="col-md-5 btn btn-outline-success mx-3"
+                    <button class="col-md-4 btn btn-outline-success mx-3"
                             type="submit" name="button" value="cancel">
                         Cancel
                     </button>

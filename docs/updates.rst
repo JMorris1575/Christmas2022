@@ -19,8 +19,9 @@ Initial Ideas
 
 .. _wordgame_update:
 
+******************************************
 Plans for Updating the Christmas Word Game
-==========================================
+******************************************
 
 I noticed that I had to reject the same words over and over when finalizing them this year. I thought it would be easier
 if the system saved the rejected words and didn't display them on the verify page once they had been rejected. They
@@ -38,7 +39,7 @@ scoring should take the length of the words into account. I doubt it though. The
 working well enough.
 
 Rejecting Words
----------------
+===============
 
 This will probably be the most difficult change to make. I'm thinking I should create a separate "dictionary" of
 rejected words and add to it every time I reject one. This dictionary can be searched for any words that a player
@@ -46,10 +47,10 @@ enters that is not included in the main dictionary. If it is there it can be mar
 in the player's word list for that day. If not, it can be marked to be checked and displayed in grey.
 
 Preliminaries
-^^^^^^^^^^^^^
+-------------
 
-Studying views.py
-"""""""""""""""""
+Studying ``views.py``
+^^^^^^^^^^^^^^^^^^^^^
 
 A quick glance over ``views.py`` indicates that the following functions will be affected:
 
@@ -62,8 +63,8 @@ A quick glance over ``views.py`` indicates that the following functions will be 
 #. Change ``player_list`` to ``player_word_list`` to make it more clear what the variable represents.
 #. Continue from here...
 
-Changes to entry.html
-"""""""""""""""""""""
+Changes to ``entry.html``
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Looking over ``entry.html``, and considering the changes above, I see the following possible changes:
 
@@ -71,21 +72,21 @@ Looking over ``entry.html``, and considering the changes above, I see the follow
 #. Add a third box to words that have been rejected for that player on this word so they don't have to add them again.
 #. The titles for the three boxes can be: ``Words Accepted``, ``Words To Be Checked`` and ``Words Rejected``.
 
-Changes to scoreboard.html
-""""""""""""""""""""""""""
+Changes to ``scoreboard.html``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 #. Some means of identifying the rejected words will have to be developed. Currently the words with a score of 2 get
    displayed in bold green, the ones with a score of 1 in regular green and the rest in light grey. I need a way to
    identify the rejected words that does not affect the score so they can be displayed in red.
 
-Changes to check.html
-"""""""""""""""""""""
+Changes to ``check.html``
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 #. The buttons next to each word need to be radio buttons, not checkboxes. It should not be possible for a word to
    be both accepted and rejected.
 
 Miscellaneous Items
-"""""""""""""""""""
+^^^^^^^^^^^^^^^^^^^
 
 #. I removed the word "ain't" from the dictionary.
 #. I noticed it had some hyphenated words. Should I allow hyphenated words?
@@ -94,14 +95,14 @@ Miscellaneous Items
 #. I created an empty file ``rejected_words.txt`` to hold the rejected words.
 
 Changing How Words are Checked
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+------------------------------
 
 First I will modify ``check_words(wordlist, oldlist, current_word)`` and get it working, then move on to automatically
 adding words to the rejected list when they are rejected and then, finally, adjust the ``html`` files to take this new
 feature into account.
 
-Modifying check_words()
-"""""""""""""""""""""""
+Modifying ``check_words()``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Here is the current form of the function::
 
@@ -251,7 +252,7 @@ I will delete those lines.::
             return redirect('wordgame:entry')
 
 Implementing the Rejection of Words
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-----------------------------------
 
 There are a few things to do here:
 
@@ -259,14 +260,8 @@ There are a few things to do here:
 #. Improve the functionality of ``verify.html``.
 #. Report the rejected words to the players in both ``entry.html`` and ``scoreboard.html``.
 
-I have changed to radio buttons in verify.html and made changes to the post method of VerifyView having to do with how
-radio buttons work. The system still seems to reject all the words whether I mark them for rejection or not, but that
-may be because they are already in rejected_words.txt. I need to add another radio button to verify.html in case I
-click on accept or reject and decide I want to leave it blank. I don't know of another way to clear a radio button once
-it has been checked. (Do they have a clear option? Perhaps something through javascript. :-( )
-
-Adding to rejected_words.txt
-""""""""""""""""""""""""""""
+Adding to ``rejected_words.txt``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This was amazingly easy. I changed the definition of ``add_dict_words`` to the following::
 
@@ -290,11 +285,67 @@ This was amazingly easy. I changed the definition of ``add_dict_words`` to the f
 And then altered the two calls to ``add_dict_words()``, one in ``reject_words`` and one in the ``post`` method of
 ``VerifyView``, to include the appropriate dictionary filename, either ``dictionary.txt`` or ``rejected_words.txt``.
 
+Radio Buttons in ``verify.html``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+For radio buttons to work they must all be in the same group, indicated by the ``name=`` parameter(?). I need to have
+several groups of radio buttons, one group for each word so I used the word itself as the group name.
+
+I decided to use bootstrap's fancier radio buttons which are labelled with their name.
+
+Also, I needed a way to leave a word to be checked later if I so desired and that would be impossible if I only had two
+radio buttons: ``Accept`` and ``Reject``. Once I clicked on one I would not be able to unclick it. I decided to add a
+third button: ``Wait`` which will turn off the other two if selected. The default is no to do anything so I guess I can
+set the ``Wait`` button to checked at the beginning. I could do that by typing ``checked`` after value="wait" in the
+``Wait`` button's ``<input>`` line, but I decided I didn't like the way it looked.
+
+Finally I wanted all three buttons to be the same size and eventually figured out how to use ``col`` and ``px`` to make
+it look the way I wanted.
+
+The last button, the ``Wait`` button is rounded on the right. I couldn't figure out how to change that.
+
+Here is the final form of the changes I made::
+
+    <table class="table text-center text-success">
+        <thead>
+            <tr>
+                <th scope="col">Start Word</th>
+                <th scope="col">Player Word</th>
+                <th scope="col">Options</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for word in rejected %}
+                <tr>
+                    <th scope="row">{{ word.start_word }}</th>
+                    <td>{{ word.word }}</td>
+                    <td>
+                        <div class="btn-group" role="group">
+                            <input type="radio" class="btn-check" name="{{ word.word }}" id="{{ word.word }}-1" value="accept"/>
+                            <label class="btn btn-outline-success col-4 px-4" for="{{ word.word }}-1">Accept</label>
+                            <input type="radio" class="btn-check" name="{{ word.word }}" id="{{ word.word }}-2" value="reject"/>
+                            <label class="btn btn-outline-danger col-4 px-4" for="{{ word.word }}-2">Reject</label>
+                            <input type="radio" class="btn-check" name="{{ word.word }}" id="{{ word.word }}-3" value="wait"/>
+                            <label class="btn btn-outline-info col-4 px-4" for="{{ word.word }}-3">Wait</label>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+Editing the ``post`` Method
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+made changes to the post method of VerifyView having to do with how radio buttons work.
+
 
 .. _trivia_update:
 
+****************************************************************
 Updating the Way the Trivia Game Saves Question and Answer Files
-================================================================
+****************************************************************
 
 This was the easiest update and so the one I started with. All I had to do was add a couple of imports at the beginning
 of ``trivia/views.py`` and alter the ``open`` statements that set up writing to the files. Note the use of
@@ -310,13 +361,15 @@ of ``trivia/views.py`` and alter the ``open`` statements that set up writing to 
 
 .. _concentration_update:
 
+*************************************************************
 Plans for Improving the Interface with the Concentration Game
-=============================================================
+*************************************************************
 
 .. _new_game:
 
+*******************************************
 Plans for a New Game Involving St. Nicholas
-===========================================
+*******************************************
 
 I got this idea when I started working with Godot but haven't been ready to implement it until now. I'm hoping that this
 sort of game will attract the kids to the website while still being fun for the adults too. The game will be based on
