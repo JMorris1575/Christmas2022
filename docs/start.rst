@@ -4,75 +4,8 @@ Starting the Christmas 2022 Project
 
 .. note:: Starting on December 27, 2021
 
-*************
-Initial Ideas
-*************
-
 I decided to start next year's Christmas website early this year. I want to change some things while the ideas are fresh
 in my mind. Here are my initial plans:
-
-#. Modify ``wordgame`` to keep a rejected word list and simplify the verification of submitted words. (See
-   :ref:`wordgame_update`)
-#. Modify ``trivia`` to use Base_Dir to save the question and answer files instead of hard-coding the directory. (See
-   :ref:`trivia_update`)
-#. Improve the interface with the Concentration game, such as the game being able to send a ``post`` request. (See
-   :ref:`concentration_update`)
-#. Create a new game involving St. Nicholas. (See :ref:`new_game`)
-
-.. _wordgame_update:
-
-Plans for Updating the Christmas Word Game
-==========================================
-
-I noticed that I had to reject the same words over and over when finalizing them this year. I thought it would be easier
-if the system saved the rejected words and didn't display them on the verify page once they had been rejected. They
-could also be kept in the players' word lists but not scored and they could see that their words had been rejected.
-Currently they just disappear. Here are some thoughts:
-
-#. Display the rejected words in red as soon as they are entered (and known to be rejected).
-#. Option: If a player convinces me to count a word, remove it from rejected words and add it to the dictionary.
-#. Option: You could take points off for guessing.
-
-You may also want to revise the rules of the game.
-
-Thoughts on Scoring: Perhaps using all the letters of a word to form a new word should be worth more points. Perhaps the
-scoring should take the length of the words into account. I doubt it though. The one and two point thing seems to be
-working well enough.
-
-.. _trivia_update:
-
-Updating the Way the Trivia Game Saves Question and Answer Files
-================================================================
-
-This was the easiest update and so the one I started with. All I had to do was add a couple of imports at the beginning
-of ``trivia/views.py`` and alter the ``open`` statements that set up writing to the files. Note the use of
-``os.path.join`` rather than just ``os.join`` (I had tried the latter first.)::
-
-    from django.conf import settings
-    import os
-
-    question_file = open(os.path.join(settings.BASE_DIR, 'Christmas_Trivia_Questions.txt', 'w'))
-    ...
-    answer_file = open(os.path.join(settings.BASE_DIR, 'Christmas_Trivia_Answers.txt', 'w'))
-
-
-.. _concentration_update:
-
-Plans for Improving the Interface with the Concentration Game
-=============================================================
-
-.. _new_game:
-
-Plans for a New Game Involving St. Nicholas
-===========================================
-
-I got this idea when I started working with Godot but haven't been ready to implement it until now. I'm hoping that this
-sort of game will attract the kids to the website while still being fun for the adults too. The game will be based on
-topdown-shooter tutorials, such as the one at https://www.youtube.com/channel/UCLzFt-NdfCm8WFKTyqD0yJw but that doesn't
-involve shooting people, but instead, St. Nicholas throwing bags of gold into the homes of poor people.
-
-I am working on the tutorial cited above and hope to learn enough to develop a fully-working game with several levels
-that are fun to play.
 
 ********************
 Starting the Project
