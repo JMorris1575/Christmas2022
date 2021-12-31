@@ -11,7 +11,10 @@ Welcome to Christmas 2022's documentation!
    :caption: Contents:
 
    start.rst
+   updates.rst
    new_game.rst
+   concentration.rst
+
 
 
 Indices and tables

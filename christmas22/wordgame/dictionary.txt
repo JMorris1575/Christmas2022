@@ -815,7 +815,6 @@ aim
 aimless
 aimlessly
 aimlessness
-ain't
 air
 air-condition
 air-conditioned
@@ -13202,6 +13201,7 @@ feeler
 feeling
 feelingly
 feelings
+fees
 feet
 feign
 feint
@@ -13571,6 +13571,7 @@ fitfully
 fitfulness
 fitly
 fitness
+fits
 fitted
 fitter
 fitting
@@ -13578,6 +13579,7 @@ fittingly
 five
 five-and-dime
 five-and-ten
+fives
 fix
 fixable
 fixate
@@ -34980,6 +34982,7 @@ stirrup
 stitch
 stitchery
 stitching
+stive
 stoat
 stock
 stock-in-trade

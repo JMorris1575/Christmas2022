@@ -47,16 +47,16 @@ def clean_words():
     """
     for word in PlayerWord.objects.all():
         if word.explanation:
-            if word.explanation != 'not in dictionary':
+            if word.explanation not in ['not in dictionary', 'not accepted']:
                 word.delete()
 
-def add_dict_words(word_list):
+def add_dict_words(word_list, dict_filename):
     '''
     Adds the word_list to the dictionary, sorts and saves the dictionary
     :param word_list: list of str: the words to be added to the dictionary
     :return: None
     '''
-    dict_file = os.path.join(settings.BASE_DIR, 'wordgame', '2of12-edited.txt')
+    dict_file = os.path.join(settings.BASE_DIR, 'wordgame', dict_filename)
     dictionary = [x.strip() for x in open(dict_file).readlines()]
     for word in word_list:
         if word not in dictionary:
@@ -71,15 +71,16 @@ def reject_words(word_list):
     """
     Marks the explanation of the given words as 'rejected' in every PlayerWord where it appears then removes those
     entries with a call to clean_words()
-    :parameter: word_list: str - the word that is to be rejected
+    :parameter: word_list: list - the words that are to be rejected
     :return: None
     """
     for word in word_list:
         rejected = PlayerWord.objects.filter(word=word)
         for item in rejected:
-            item.explanation = 'rejected'
+            item.explanation = 'not accepted'
             item.save()
-    clean_words()
+    clean_words()           # is this really necessary?
+    add_dict_words(word_list, 'rejected_words.txt')
 
 def check_words(wordlist, oldlist, current_word):
     '''
@@ -88,15 +89,18 @@ def check_words(wordlist, oldlist, current_word):
         2. Is it not the same as the given word?
         3. Is it made up only from the letters of the current word?
         4. Is it in the dictionary?
-        5. Does it repeat any of the other words in this list?
+        5. Has it already been rejected?
+        6. Does it repeat any of the other words in this list?
     :param wordlist: type: list of str - the single words to be checked
     :param oldlist: type: list - the previous words to include in checking for duplicates
     :param current_word: type: str
     :return: type: list - dictionaries for each word in word list each dictionary has the structure:
         { 'word':<player's word>, 'error_msg':<error message about word if any>}
     '''
-    dict_file = os.path.join(settings.BASE_DIR, 'wordgame', '2of12-edited.txt')
+    dict_file = os.path.join(settings.BASE_DIR, 'wordgame', 'dictionary.txt')
     dictionary = [x.strip() for x in open(dict_file).readlines()]
+    reject_file = os.path.join(settings.BASE_DIR, 'wordgame', 'rejected_words.txt')
+    rejects = [x.strip() for x in open(reject_file).readlines()]
 
     given_word = current_word.strip().lower()
     word_info = []      # create the list of dictionaries
@@ -110,6 +114,8 @@ def check_words(wordlist, oldlist, current_word):
             info['error_msg'] = 'too short'
         elif not can_make_word(word, given_word):   # check to see if word can be made from given_word
             info['error_msg'] = "can't be formed from " + current_word
+        elif word in rejects:
+            info['error_msg'] = "not accepted"
         elif word not in dictionary:                # check to see if word is in dictionary
             info['error_msg'] = "not in dictionary"
         # Check to see if the word is a duplicate
@@ -307,13 +313,13 @@ class EntryView(View):
         else:
             scores_yesterday = []                                 # on the first day there are no scores from yesterday
         if current_word:
-            player_list = PlayerWord.objects.filter(user=request.user, start_word=current_word).order_by('word')
+            player_word_list = PlayerWord.objects.filter(user=request.user, start_word=current_word).order_by('word')
             comments = WordComment.objects.filter(daily_word=current_word)
         else:
-            player_list = None
+            player_word_list = None
             comments = GameComment.objects.all()
         context = {'memory': utilities.get_random_memory(), 'current_word': current_word, 'date_one':date_one,
-                   'player_list': player_list, 'today': scores_today, 'yesterday': scores_yesterday,
+                   'player_word_list': player_word_list, 'today': scores_today, 'yesterday': scores_yesterday,
                    'comments': comments}
         return render(request, self.template_name, context)
 
@@ -325,18 +331,18 @@ class EntryView(View):
             current_word = None
         player_list = PlayerWord.objects.filter(user=request.user, start_word=current_word)
         if request.POST['button'] == 'check':
-            # first remove words previously rejected
-            for word in player_list:
-                if word.explanation:
-                    if word.explanation != 'not in dictionary':
-                        word.delete()
+            # # first remove words previously rejected
+            # for word in player_list:
+            #     if word.explanation:
+            #         if word.explanation != 'not in dictionary':
+            #             word.delete()
             # now get the new words if any
             old_word_list = []
             for word in player_list:
                 old_word_list.append(word.word)
             new_word_list = [x.strip().lower() for x in request.POST['word_list'].split(',') if x.strip() != '']
             checked_list = check_words(new_word_list, old_word_list, current_word.word)
-            # then add the new checked list - including those marked 'not in dictionary'
+            # then add the new checked list - including those marked 'not in dictionary' and 'not accepted'
             for word in checked_list:
                 if len(word['word']) > 25:
                     word['word'] = word['word'][0:20] + '...'
@@ -372,18 +378,27 @@ class VerifyView(View):
     template_name = 'wordgame/verify.html'
 
     def get(self, request):
-        rejected_words = PlayerWord.objects.exclude(explanation='').order_by('word').distinct('word')
+        rejected_words = PlayerWord.objects.filter(explanation='not in dictionary').order_by('word').distinct('word')
+        # rejected_words = PlayerWord.objects.exclude(explanation='').order_by('word').distinct('word')
         context = {'memory': utilities.get_random_memory(), 'rejected': rejected_words}
         return render(request, self.template_name, context)
 
     def post(self, request, ):
         if request.POST['button'] == 'ok':
-            if 'accept' in request.POST:
-                accepted_words = list(request.POST.getlist('accept'))
-                add_dict_words(accepted_words)
-            if 'reject' in request.POST:
-                rejected_words = list(request.POST.getlist('reject'))
-                reject_words(rejected_words)
+            print("request.POST = ", request.POST)
+            word_list = PlayerWord.objects.filter(explanation='not in dictionary').distinct('word')
+            print('word_list = ', word_list)
+            accepted_words = []
+            rejected_words = []
+            for word in word_list:
+                if word.word in request.POST.keys():
+                    if request.POST[word.word] == 'accept':
+                        accepted_words.append(word.word)
+                    elif request.POST[word.word] == 'reject':
+                        rejected_words.append(word.word)
+                    # else I clicked on "Wait" or didn't click at all
+            add_dict_words(accepted_words, 'dictionary.txt')
+            reject_words(rejected_words)        # marks them 'not accepted' and puts them in rejected_words.txt
             word_number = get_current_word_number()
             UserModel = get_user_model()
             users = UserModel.objects.all()

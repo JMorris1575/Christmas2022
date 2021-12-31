@@ -63,11 +63,11 @@
                 I finalize the scores on the last set of words.
             </p>
         {% endif %}
-        {% if player_list %}
+        {% if player_word_list %}
             <div class="row justify-content-around mb-3">
                 <div class="card col-md-5 text-success border-success pb-2">
                     <h4 class="card-header bg-white px-0">Words Accepted:</h4>
-                    {% for word in player_list %}
+                    {% for word in player_word_list %}
                         {% if not word.explanation %}
                             {% if forloop.last %}
                                 {{ word }}
@@ -79,7 +79,7 @@
                 </div>
                 <div class="card col-md-5 border-success text-success pb-2">
                     <h4 class="card-header px-0 bg-white">Words Currently Rejected:</h4>
-                    {% for word in player_list %}
+                    {% for word in player_word_list %}
                         {% if word.explanation %}
                             {{ word }} - {{ word.explanation }}<br>
                         {% endif %}
