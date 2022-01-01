@@ -256,7 +256,7 @@ class ScoreboardView(View):
             word_dict = {'given_word': word, 'players': []}
             player_list = PlayerWord.objects.filter(start_word=word).distinct('user')
             for player in player_list:
-                words = PlayerWord.objects.filter(start_word=word, user=player.user).order_by('score', 'word')
+                words = PlayerWord.objects.filter(start_word=word, user=player.user).order_by('-score', 'word')
                 word_dict['players'].append({'name': player.user.username, 'words': words})
             stats.append(word_dict)
         UserModel = get_user_model()

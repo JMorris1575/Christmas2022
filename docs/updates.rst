@@ -457,6 +457,37 @@ modify it so that it also doesn't delete words that have been tried but ``not ac
 In order to fit everything into the narrower boxes, I had to change the "can't be formed from..." message to
 "not from...".
 
+Editing ``scoreboard.html``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This turned out to be easy, though it also required one small change to ``ScoreboardView``'s ``get`` method. Here are
+the changes made to the section of ``scoreboard.html`` that prints the list of words::
+
+    <td>
+        {% for word in player.words %}
+            {% if word.score == 2 %}
+                <strong>{{ word.word }}</strong>
+            {% elif word.score == 1 %}
+                {{ word.word }}
+            {% elif word.explanation == 'not in dictionary' %}
+                <inline class="text-black-50">{{ word.word }}</inline>
+            {% elif word.explanation == 'not accepted' %}
+                <inline class="text-danger">{{ word.word }}</inline>
+            {% endif %}                 # a professional programmer would have an else here to catch outliers
+        {% endfor %}
+    </td>
+
+The change needed in ``ScoreboardView``'s ``get`` method was one single character! I noticed that the red words, the
+rejected ones were coming first. It turned out to be because the lists of each player's words in ``stats`` were ordered
+by the score and then by the word. Adding a negative sign before ``score`` changed it to reverse order -- which is good
+in another way too: it makes sense to have the highest scoring words come first.
+
+Here is the section of the ``get`` method I changed::
+
+    for player in player_list:
+        words = PlayerWord.objects.filter(start_word=word, user=player.user).order_by('-score', 'word')
+        word_dict['players'].append({'name': player.user.username, 'words': words})
+    stats.append(word_dict)
 
 .. _trivia_update:
 

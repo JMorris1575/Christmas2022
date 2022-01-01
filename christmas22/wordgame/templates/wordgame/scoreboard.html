@@ -82,8 +82,10 @@
                                                                 <strong>{{ word.word }}</strong>
                                                             {% elif word.score == 1 %}
                                                                 {{ word.word }}
-                                                            {% else %}
+                                                            {% elif word.explanation == 'not in dictionary' %}
                                                                 <inline class="text-black-50">{{ word.word }}</inline>
+                                                            {% elif word.explanation == 'not accepted' %}
+                                                                <inline class="text-danger">{{ word.word }}</inline>
                                                             {% endif %}
                                                         {% endfor %}
                                                     </td>
