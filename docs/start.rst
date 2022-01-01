@@ -62,7 +62,7 @@ Here is the process I followed to clone the Christmas2022 project onto my home c
 #. Used PgAdmin 4 to create a local ``c22data`` database.
 #. Changed the ``DATABASE_PORT`` in ``secrets.json`` to 5434 as is needed on this machine.
 #. Performed ``python manage.py migrate`` without much problem. (I first forgot to get into the ``christmas22``
-   directory.
+   directory.)
 #. Performed ``python manage.py loaddata 2021-12-28-all.json`` which happily installed 3902 objects from one fixture.
 #. Tested it with python manage.py runserver and it worked fine!
 
@@ -73,4 +73,27 @@ When I tried ``make html`` without first doing a ``sphinx-quickstart`` it didn't
 ``make.bat`` file. I used DWService to copy ``conf.py``, ``make.bat`` and ``Makefile`` to the home computer. It changed
 the name of ``make.bat`` to ``make.bat.txt`` and I had to change it back, but then ``make html`` worked perfectly well
 except it warned me to create a ``_static`` folder. I have added ``conf.py``, ``make.bat`` and ``Makefile`` to Git.
+
+Notes on ``git pull``
+=====================
+
+When I got back to the rectory, and tried to do a ``git pull`` from PyCharm, I kept getting messages like the
+following::
+
+    12/31/2021
+    4:17 PM	Git Pull Failed
+                    Your local changes will be overwritten by merge.
+                    Commit, stash, or revert them to proceed.View them
+
+When I viewed the files that I would supposedly overwrite they all seemed to be in ``__pycache__`` directories and I
+could not "Commit, stash, or revert them." With information from the following website:
+
+    https://appuals.com/how-to-fix-git-error-your-local-changes-to-the-following-files-will-be-overwritten-by-merge/
+
+I was able to resolve the problem with the following two commands in the terminal::
+
+    git reset --hard
+    git pull
+
+As a side note, it's nice to know that I can give (and learn) ``git`` commands in PyCharm's terminal.
 

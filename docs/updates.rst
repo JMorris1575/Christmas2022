@@ -206,10 +206,17 @@ Other changes were needed too. First, in ``clean_words`` I save both the words t
                 if word.explanation not in ['not in dictionary', 'not accepted']:   # <---Change
                     word.delete()
 
+.. _entry_view_post:
+
 Yet, even after doing that my words that were stubbed into ``rejected_words.txt`` were being removed from
 ``PlayerWords``. I finally found the culprit in ``EntryView``'s ``post`` routine. It was removing all words
 that had previously been rejected. I commented that section out for the time being. If it doesn't cause problems
-I will delete those lines.::
+I will delete those lines.
+
+.. note:: These lines are necessary but need to be modified to include words marked "not accepted." The correct form is
+    shown below.
+
+Here is the correct current form of the ``post`` method::
 
     def post(self, request):
         word_number = get_current_word_number()
@@ -219,11 +226,11 @@ I will delete those lines.::
             current_word = None
         player_list = PlayerWord.objects.filter(user=request.user, start_word=current_word)
         if request.POST['button'] == 'check':
-            # # first remove words previously rejected                  # <---Change
-            # for word in player_list:                                  # <---Change
-            #     if word.explanation:                                  # <---Change
-            #         if word.explanation != 'not in dictionary':       # <---Change
-            #             word.delete()                                 # <---Change
+            # first remove words previously rejected
+            for word in player_list:
+                if word.explanation:
+                    if word.explanation not in ['not in dictionary', 'not accepted']:
+                        word.delete()
             # now get the new words if any
             old_word_list = []
             for word in player_list:
@@ -337,8 +344,118 @@ Here is the final form of the changes I made::
 Editing the ``post`` Method
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+The selected radio buttons send their information in ``request.POST`` with the words themselves as the keys and the
+values being ``accept``, ``reject`` or ``wait``. This meant there had to be a few changes in ``VerifyView``'s ``post``
+method. I needed to get the ``word_list`` of all distince words that were marked ``not in dictionary``. I iterated
+through these words, the same list the ``get`` method sent to ``verify.html`` and, if they were in ``request.POST``'s
+keys, because the ones I didn't click wouldn't be, they got sorted into the accepted or rejected words. These lists were
+used to update their respective dictionaries and marked accordingly. The current form of the ``post`` method is
+displayed below::
 
-made changes to the post method of VerifyView having to do with how radio buttons work.
+    def post(self, request, ):
+        if request.POST['button'] == 'ok':
+            word_list = PlayerWord.objects.filter(explanation='not in dictionary').distinct('word')
+            accepted_words = []
+            rejected_words = []
+            for word in word_list:
+                if word.word in request.POST.keys():
+                    if request.POST[word.word] == 'accept':
+                        accepted_words.append(word.word)
+                    elif request.POST[word.word] == 'reject':
+                        rejected_words.append(word.word)
+                    # else I clicked on "Wait" or didn't click at all
+            add_dict_words(accepted_words, 'dictionary.txt')
+            reject_words(rejected_words)        # marks them 'not accepted' and puts them in rejected_words.txt
+            word_number = get_current_word_number()
+            UserModel = get_user_model()
+            users = UserModel.objects.all()
+            update_game(word_number, users, all=True)
+            clean_words()
+        return redirect('wordgame:scoreboard')
+
+Editing ``entry.html``
+^^^^^^^^^^^^^^^^^^^^^^
+
+Planning
+""""""""
+
+Currently, when a player enters words, one box opens with a simple list of the words accepted and another box next to
+it, now marked "Words Currently Rejected", that shows a vertical list of those words with the reason each was rejected.
+The next time the player entered words the ones that could not be made with the letters of the given word, or were
+rejected for some other fatal reason, were removed from ``PlayerWords`` and did not appear. The words that had not been
+found in the dictionary, however, remained until I accepted or rejected them. Previously, once I rejected a word, it
+was removed from ``PlayerWords`` and no longer appeared in this list. Words I accepted moved to their first list.
+
+I want to maintain a lot of that behavior but use the list of words marked ``not accepted`` to signal to the player that
+they need not use them again and also not keep showing up in the verify list. I think I need to do a narrative walk-
+through to get a clear idea of what I want:
+
+Janet comes to the wordgame and finds that the word of the day is "Festive." She writes "feast, vest, stive, vit, vits,
+fives" in the entry box and clicks the "Check Words" button.
+
+Unknown to her, Madeline had already played the game and I had rejected the words "vit" and "vits." Thus, when the
+entry page refreshes Janet now sees, three boxes under the entry box: one for her words that have been accepted, one for
+her word that have been rejected, and one to report on the unscored words and the reason they were not scored. It might
+look something like the following::
+
+    Accepted:                    Rejected:                  Unscored:
+    vest                         vit, vits                  feast - can't be formed from festive
+                                                            fives - not in dictionary
+                                                            stive - not in dictionary
+
+The next time she adds words, the word "feast" will not appear in the ``Unscored`` column but "stive" and "fives" will
+remain there until I accept or reject them. In this examples "fives" would be accepted but "stive" would not.
+
+Implementation
+""""""""""""""
+
+All the sifting of the words seems to be done in the templeate ``entry.html`` rather than the ``get`` method so that's
+all I have to change. Here is what I ended up with in the section after the form where the words are entered::
+
+    {% if player_word_list %}
+        <div class="row justify-content-around mb-3">
+            <div class="card col-md-3 text-success border-success pb-2">
+                <h4 class="card-header bg-white px-0">Accepted:</h4>
+                {% for word in player_word_list %}
+                    {% if not word.explanation %}
+                        {% if forloop.last %}
+                            {{ word }}
+                        {% else %}
+                            {{ word }},
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+            </div>
+            <div class="card col-md-3 border-success text-danger pb-2">
+                <h4 class="card-header px-0 bg-white">Rejected:</h4>
+                {% for word in player_word_list %}
+                    {% if word.explanation == 'not accepted' %}
+                        {% if forloop.last %}
+                            {{ word }}
+                        {% else %}
+                            {{ word }},
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+            </div>
+            <div class="card col-md-3 border-success text-success pb-2">
+                <h4 class="card-header px-0 bg-white">Unscored:</h4>
+                {% for word in player_word_list %}
+                    {% if word.explanation and word.explanation != 'not accepted' %}
+                        {{ word }} - {{ word.explanation }}<br>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+While checking this I discovered the real use for the word deletion that was taking place in the ``post`` method. It was
+originally meant to delete the words that were rejected for reasons other than not being in the dictionary. I had to
+modify it so that it also doesn't delete words that have been tried but ``not accepted``. See
+:ref:`EntryView.post <entry_view_post>`.
+
+In order to fit everything into the narrower boxes, I had to change the "can't be formed from..." message to
+"not from...".
 
 
 .. _trivia_update:

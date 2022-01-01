@@ -65,8 +65,8 @@
         {% endif %}
         {% if player_word_list %}
             <div class="row justify-content-around mb-3">
-                <div class="card col-md-5 text-success border-success pb-2">
-                    <h4 class="card-header bg-white px-0">Words Accepted:</h4>
+                <div class="card col-md-3 text-success border-success pb-2">
+                    <h4 class="card-header bg-white px-0">Accepted:</h4>
                     {% for word in player_word_list %}
                         {% if not word.explanation %}
                             {% if forloop.last %}
@@ -77,10 +77,22 @@
                         {% endif %}
                     {% endfor %}
                 </div>
-                <div class="card col-md-5 border-success text-success pb-2">
-                    <h4 class="card-header px-0 bg-white">Words Currently Rejected:</h4>
+                <div class="card col-md-3 border-success text-danger pb-2">
+                    <h4 class="card-header px-0 bg-white">Rejected:</h4>
                     {% for word in player_word_list %}
-                        {% if word.explanation %}
+                        {% if word.explanation == 'not accepted' %}
+                            {% if forloop.last %}
+                                {{ word }}
+                            {% else %}
+                                {{ word }},
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <div class="card col-md-3 border-success text-success pb-2">
+                    <h4 class="card-header px-0 bg-white">Unscored:</h4>
+                    {% for word in player_word_list %}
+                        {% if word.explanation and word.explanation != 'not accepted' %}
                             {{ word }} - {{ word.explanation }}<br>
                         {% endif %}
                     {% endfor %}

@@ -113,7 +113,7 @@ def check_words(wordlist, oldlist, current_word):
         elif len(word) < 3:                         # check word length
             info['error_msg'] = 'too short'
         elif not can_make_word(word, given_word):   # check to see if word can be made from given_word
-            info['error_msg'] = "can't be formed from " + current_word
+            info['error_msg'] = "not from " + current_word
         elif word in rejects:
             info['error_msg'] = "not accepted"
         elif word not in dictionary:                # check to see if word is in dictionary
@@ -331,11 +331,11 @@ class EntryView(View):
             current_word = None
         player_list = PlayerWord.objects.filter(user=request.user, start_word=current_word)
         if request.POST['button'] == 'check':
-            # # first remove words previously rejected
-            # for word in player_list:
-            #     if word.explanation:
-            #         if word.explanation != 'not in dictionary':
-            #             word.delete()
+            # first remove words previously rejected and already displayed
+            for word in player_list:
+                if word.explanation:
+                    if word.explanation not in ['not in dictionary', 'not accepted']:
+                        word.delete()
             # now get the new words if any
             old_word_list = []
             for word in player_list:
@@ -378,16 +378,14 @@ class VerifyView(View):
     template_name = 'wordgame/verify.html'
 
     def get(self, request):
-        rejected_words = PlayerWord.objects.filter(explanation='not in dictionary').order_by('word').distinct('word')
+        word_list = PlayerWord.objects.filter(explanation='not in dictionary').order_by('word').distinct('word')
         # rejected_words = PlayerWord.objects.exclude(explanation='').order_by('word').distinct('word')
-        context = {'memory': utilities.get_random_memory(), 'rejected': rejected_words}
+        context = {'memory': utilities.get_random_memory(), 'rejected': word_list}
         return render(request, self.template_name, context)
 
     def post(self, request, ):
         if request.POST['button'] == 'ok':
-            print("request.POST = ", request.POST)
             word_list = PlayerWord.objects.filter(explanation='not in dictionary').distinct('word')
-            print('word_list = ', word_list)
             accepted_words = []
             rejected_words = []
             for word in word_list:

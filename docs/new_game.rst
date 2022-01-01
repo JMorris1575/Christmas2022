@@ -25,3 +25,10 @@ for the St. Nicholas character. This is how it looks now:
 
 .. image:: images/StNicholas.png
 
+Node Based ?????
+================
+
+I'm learning more about how to connect different nodes of my tree, a problem I had when writing the Concentration
+program. I believe it is section seven or eight of the tutorial that talks about something he calls "node injection"
+where a higher level node sends a reference to itself to the nodes that might need it. That way, if the hierarchy
+changes, the new information gets sent automatically and I don't have to try to find all the references to it.
