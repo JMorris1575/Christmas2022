@@ -19,17 +19,21 @@ Initial Ideas
 
 .. _wordgame_update:
 
-******************************************
-Plans for Updating the Christmas Word Game
-******************************************
+********************************
+Updating the Christmas Word Game
+********************************
+
+Initial Plans
+=============
 
 I noticed that I had to reject the same words over and over when finalizing them this year. I thought it would be easier
 if the system saved the rejected words and didn't display them on the verify page once they had been rejected. They
 could also be kept in the players' word lists but not scored and they could see that their words had been rejected.
 Currently they just disappear. Here are some thoughts:
 
-#. Display the rejected words in red as soon as they are entered (and known to be rejected).
+#. Display the rejected words in red as soon as they are entered (and known to be rejected). (See :ref:`reject_words`)
 #. Option: If a player convinces me to count a word, remove it from rejected words and add it to the dictionary.
+   (See :ref:`appeal`)
 #. Option: You could take points off for guessing.
 
 You may also want to revise the rules of the game.
@@ -37,6 +41,8 @@ You may also want to revise the rules of the game.
 Thoughts on Scoring: Perhaps using all the letters of a word to form a new word should be worth more points. Perhaps the
 scoring should take the length of the words into account. I doubt it though. The one and two point thing seems to be
 working well enough.
+
+.. _reject_words:
 
 Rejecting Words
 ===============
@@ -489,6 +495,15 @@ Here is the section of the ``get`` method I changed::
         word_dict['players'].append({'name': player.user.username, 'words': words})
     stats.append(word_dict)
 
+.. _appeal
+
+Accepting Player Appeals
+========================
+
+Now that rejected words will be displayed, both on the entry page and on the scoreboard page, players may want to appeal
+my decision. If they convince me that I was wrong to reject a word there should be a simple way for me to remove it from
+``rejected_words.txt`` and get it into ``dictionary.txt``. I will have to think about how that could work.
+
 .. _trivia_update:
 
 ****************************************************************
@@ -525,5 +540,7 @@ topdown-shooter tutorials, such as the one at https://www.youtube.com/channel/UC
 involve shooting people, but instead, St. Nicholas throwing bags of gold into the homes of poor people.
 
 I am working on the tutorial cited above and hope to learn enough to develop a fully-working game with several levels
-that are fun to play.
+that are fun to play for both kids and adults.
+
+
 
