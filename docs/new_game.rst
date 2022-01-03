@@ -29,6 +29,11 @@ Node Based ?????
 ================
 
 I'm learning more about how to connect different nodes of my tree, a problem I had when writing the Concentration
-program. I believe it is section seven or eight of the tutorial that talks about something he calls "node injection"
-where a higher level node sends a reference to itself to the nodes that might need it. That way, if the hierarchy
-changes, the new information gets sent automatically and I don't have to try to find all the references to it.
+program. In section eight of the tutorial he talks about something he calls "dependency injection" as a method for
+easily making calls between nodes on the same level in the tree (sibling nodes, I believe). A higher level node sends
+the necessary nodes to the lower-level nodes so that, if the hierarchy changes, the new information can be easily
+changed in the calling function of the higher level node instead of my trying to find all the references to it.
+
+He also has a name for the structuring idea he's following, Node Based something-or-other perhaps. That may be mentioned
+in section 7 or earlier.
+
