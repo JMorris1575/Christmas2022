@@ -83,6 +83,7 @@ Here is a list of steps to complete as I start to build the game:
 #. Add the ability to move St. Nicholas using the keyboard. (See :ref:`keyboard_move`)
 #. Have the St. Nicholas character face the direction he is moving. (See :ref:`orienting_st_nick`)
 #. Add the ability to move St. Nicholas with arrows on the display screen. (See :ref:`button_move`)
+#. Save the St. Nicholas character in his own scene in an ``actors`` directory. (See :ref:`st_nick_to_scene`)
 
 .. _create_game:
 
@@ -225,6 +226,15 @@ I tested the onscreen buttons with the mouse and they worked fine. Then I set th
 ``TouchScreen Only`` for each of the buttons but they still show up on my computer screen. That is because when
 ``Emulate Touch From Mouse`` is on, ``TouchScreenButton``s are always visible.
 
+.. _st_nick_to_scene:
+
+Creating a Separate Scene for St. Nick
+--------------------------------------
+
+The ``StNick`` node now only exists as a child of the main scene. As in the jmbiv tutorial, I want to separate it into
+its own scene. Right-clicking it in the tree and selecting ``Save Branch as Scene`` I placed StNick.tscn in the
+``actors`` directory.
+
 .. _gold_bags:
 
 Bags of Gold
@@ -238,9 +248,8 @@ implement the behavior of the bags of gold. Here is what needs to be done:
 
 #. Find or Create an Icon for the gold bags. (See :ref:`gold_bag_icon`)
 #. Create a separate scene for gold bags. (See :ref:`create_gold_bag`)
-#. Display a gold bag in St. Nicholas' hand. (See :ref:`gold_in_hand`)
-#. Implement the hiding and revealing process for gold bags. (See :ref:`pocket_gold_bag`)
 #. Implement the process for St. Nicholas to throw a gold bag. (See :ref:`throwing_gold_bag`)
+#. Implement the hiding and revealing process for gold bags. (See :ref:`pocket_gold_bag`)
 
 .. _gold_bag_icon:
 
@@ -264,17 +273,38 @@ before the thieves get it?
 Creating the Gold Bag
 ---------------------
 
-.. _gold_in_hand:
+The jmbiv Top-Down Shooter tutorial I am watching uses ``Area2D`` nodes for the bullets but I don't know if they will
+be best to use for the bags of gold. I don't think they handle collisions and I might want my gold bags to collide off
+walls and things if they are thrown from the wrong place. They should have to go through an open window I think.
+``RigidBody2D`` nodes seemed too complicated to use in a top-down shooter so I settled on using a ``KinematicsBody2D``
+node.
 
-Putting a Gold Bag in St. Nicholas' Hand
-----------------------------------------
+I will start, as he did in his tutorial, with a ``GoldBag`` as a child of the ``StNick`` node and already placed in his
+right hand and then make it into it's own scene. I will create an ``objects`` directory for the ``GoldBag`` node in
+anticipation of other objects that may be added later.
+
+Once I did this I discovered a problem. Having two ``KinematicBody2D``s in contact with one another, with their
+``CollisionShape2D``s overlapping meant they were always in a collision state. St. Nicholas went flying off the screen
+to the upper left. I had to set the Collision Layers and Collision Masks for each object. I put St. Nicholas in layer 1
+and turned off his interactions (turned off the mask) on layers one and two. I put the gold bag in layer 2 and turned
+off his interactions with layers one and two. I set both of them to interact with layer 3 objects whatever they may turn
+out to be. (I'm thinking walls and other things in the environment.)
+
+Once I did that it started to work as expected, I could move St. Nicholas and the bag of gold moved with him but I don't
+really like the looks of the bag of gold. It's too dark in color and doesn't look much like a bag of gold. I may try to
+lighten it up, try for another image of a bag, or maybe just opt for gold coins which are readily available as game
+assets.
+
+I made some new textures which, for the moment, look better to me, though I may want to rotate it a little. I'm
+currently using the 20 x 20 image: ``bag-of-gold-cartoon-small.png``.
+
+.. _throwing_gold_bag:
+
+Throwing the Gold Bag
+---------------------
 
 .. _pocket_gold_bag:
 
 Gold Bags in the Pocket
 -----------------------
 
-.. _throwing_gold_bag:
-
-Throwing the Gold Bag
----------------------
