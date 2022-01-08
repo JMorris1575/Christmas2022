@@ -303,6 +303,65 @@ currently using the 20 x 20 image: ``bag-of-gold-cartoon-small.png``.
 Throwing the Gold Bag
 ---------------------
 
+When the player hits the space bar, or a cell phone or tablet user hits some kind of a "Throw" button, the gold bag
+should leave St. Nicholas in the direction he is facing and fly through the air to its landing place. Later I can
+implement such things as checking that it really gets to a proper target area or if it bounces off walls or objects in
+the environment. Here I am just concerned about it moving from St. Nicholas' hand to a certain distance away.
+
+This may take some doing so I'll break it into steps:
+
+#. Separate the GoldBag into its own scene. (See :ref:`gold_bag_scene`)
+#. Display the GoldBag in St. Nicholas' hand. (See :ref:`gold_bag_in_hand`)
+#. Set up the throwing input keys and stub in a procedure that will throw them. (See :ref:`throwing_input`)
+#. Establish starting and ending points of the throw. (See :ref:`chart_throw`)
+#. Animate the throw. (See :ref:`throw_animation`)
+
+.. _gold_bag_scene:
+
+Separating the GoldBag into its own Scene
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This was easy and will help in the process of supplying ``GoldBag``s in the future. This can be when St. Nicholas enters
+a new level and starts with a certain number of gold bags or when he has lost some through bad throws or thieves and has
+to go back home and pick up some more.
+
+In the StNick scene I right-clicked the ``GoldBag`` and selected ``Save Branch as Scene`` and selected the ``objects``
+directory for it where its images are already stored.
+
+.. _gold_bag_in_hand:
+
+Getting the GoldBag into StNick's Hand
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Then, as he did in Part 3 of the Tutorial (around 11:20), I can add a ``GoldBag`` to the StNick scene as a
+``PackedScene`` export variable. This will allow me to create new instances of the ``GoldBag`` scene from within the
+``StNick`` scene. I drag-dropped ``GoldBag.tscn`` into the ``StNick`` scene and deleted the ``GoldBag`` scene that used
+to be there. Eventually, I think, some other part of the program will instantiate the gold bags but, for now, I will
+create one in the ``_ready()`` function::
+
+    func _ready() -> void:
+        gold_bag = GoldBag.instance()
+        gold_bag.set_position(Vector2(16, 17))
+        add_child(gold_bag)
+
+I had already moved the ``GoldBag``'s sprite into St. Nicholas' right hand but I zeroed that out since it will probably
+complicate animating them when thrown. For now I will move it to his hand with the given ``position()`` method.
+
+.. _throwing_input:
+
+Input for Throwing
+^^^^^^^^^^^^^^^^^^
+
+.. _chart_throw:
+
+Mapping the Throw
+^^^^^^^^^^^^^^^^^
+
+.. _throw_animation:
+
+Animating the Throw
+^^^^^^^^^^^^^^^^^^^
+
 .. _pocket_gold_bag:
 
 Gold Bags in the Pocket

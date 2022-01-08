@@ -495,7 +495,7 @@ Here is the section of the ``get`` method I changed::
         word_dict['players'].append({'name': player.user.username, 'words': words})
     stats.append(word_dict)
 
-.. _appeal
+.. _appeal:
 
 Accepting Player Appeals
 ========================
