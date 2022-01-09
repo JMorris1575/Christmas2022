@@ -341,7 +341,7 @@ create one in the ``_ready()`` function::
 
     func _ready() -> void:
         gold_bag = GoldBag.instance()
-        gold_bag.set_position(Vector2(16, 17))
+        gold_bag.set_position(Vector2(18, 17))
         add_child(gold_bag)
 
 I had already moved the ``GoldBag``'s sprite into St. Nicholas' right hand but I zeroed that out since it will probably
@@ -352,10 +352,35 @@ complicate animating them when thrown. For now I will move it to his hand with t
 Input for Throwing
 ^^^^^^^^^^^^^^^^^^
 
+In ``Settings->Project Settings`` on the ``Input Map`` tab, I added a ``throw`` action and connected it to the space
+bar. I added the following code to ``StNick.gd`` to check its functionality::
+
+    func _unhandled_input(event: InputEvent) -> void:
+        if event.is_action_pressed("throw"):
+            shoot()
+
+
+    func shoot():
+        print("St. Nicholas tossed a bag of gold.")
+
+In the process I discovered that ``is_action_pressed`` worked better than ``is_action``. The latter fired twice for
+every click of the space bar: once for the press, once for the release. It made more sense to me to throw the bag of
+gold as soon as the key is pressed.
+
+I also added a TouchScreenButton for the throwing action and placed it at the bottom of the screen. I tried to give it a
+rough blue background but I don't like the looks of it. I think just white will go better with the arrow buttons I am
+already using.
+
 .. _chart_throw:
 
 Mapping the Throw
 ^^^^^^^^^^^^^^^^^
+
+For this I added a couple of ``Position2D`` nodes into the ``StNick`` scene. One, called ``HandPosition`` I placed at
+(18,17), the position where the gold bag starts. The other, called ``TargetPosition`` is now at (171, -3) roughly 5 feet
+directly in front of St. Nicholas. I may discover, depending on how I do the throw, that this ``TargetPosition`` node is
+not necessary. I might want to bounce gold bags off of walls etc. and the target point would not always be hit. This is
+not really like the top-down shooter's bullets.
 
 .. _throw_animation:
 
