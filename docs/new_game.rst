@@ -387,6 +387,36 @@ not really like the top-down shooter's bullets.
 Animating the Throw
 ^^^^^^^^^^^^^^^^^^^
 
+I think I'm right to use a KinematicsBody2D as the gold bag, allowing it to bounce off walls and other objects, but I
+need to learn a lot more about how to use them in collisions. I don't recall too many tutorials about that aspect of
+their abilities. The Godot documentation has what I think will be good to start with at:
+
+        https://docs.godotengine.org/en/stable/tutorials/physics/using_kinematic_body_2d.html
+
+I will try to study that first.
+
+No sooner did I start that it directed me to their Physics Introduction:
+
+        https://docs.godotengine.org/en/stable/tutorials/physics/physics_introduction.html#doc-physics-introduction
+
+and now I'm thinking maybe gold bags should be ``RigidBody2D``s instead. They might be able to do the bounces on their
+own and may also benefit from using a physics material to provide such things as friction and the bounce of an object.
+Physics materials are discussed at:
+
+        https://docs.godotengine.org/en/stable/classes/class_physicsmaterial.html#class-physicsmaterial
+
+The Physics Introduction explains how to use collision layers and masks and how to name them. Useful to know! Layers can
+be used to tell the type of object -- their example is Walls, Player, Enemy and Coin. Masks are used to define what each
+object can interact with, for instance, a Player should interact with Walls, Enemies and Coins, but an Enemy should not
+interact with Coins. I seem to remember Yann, in the Udemy tutorial, saying something along the lines of "This object
+IS A Player and it can INTEACT WITH Walls, Enemies, and Coins."
+
+Reading the Physics Introduction makes me consider, again, that KinematicsBody2D nodes can be used for gold bags. I
+would have to code the bounces, but KinematicsBody2d.move_and_collide() returns a KinematicCollision2D object which I
+can use to help with that. Still, though, if a RigidBody2D takes care of that by itself, why should I?
+
+
+
 .. _pocket_gold_bag:
 
 Gold Bags in the Pocket
