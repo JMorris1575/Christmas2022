@@ -387,13 +387,17 @@ not really like the top-down shooter's bullets.
 Animating the Throw
 ^^^^^^^^^^^^^^^^^^^
 
+Ruminations
+"""""""""""
+
 I think I'm right to use a KinematicsBody2D as the gold bag, allowing it to bounce off walls and other objects, but I
 need to learn a lot more about how to use them in collisions. I don't recall too many tutorials about that aspect of
 their abilities. The Godot documentation has what I think will be good to start with at:
 
         https://docs.godotengine.org/en/stable/tutorials/physics/using_kinematic_body_2d.html
 
-I will try to study that first.
+I will try to study that first. (This is the one using ``KinematicBody2D``s to implement bullets that can bounce off
+walls.)
 
 No sooner did I start that it directed me to their Physics Introduction:
 
@@ -409,16 +413,123 @@ The Physics Introduction explains how to use collision layers and masks and how 
 be used to tell the type of object -- their example is Walls, Player, Enemy and Coin. Masks are used to define what each
 object can interact with, for instance, a Player should interact with Walls, Enemies and Coins, but an Enemy should not
 interact with Coins. I seem to remember Yann, in the Udemy tutorial, saying something along the lines of "This object
-IS A Player and it can INTEACT WITH Walls, Enemies, and Coins."
+IS A Player and it can INTERACT WITH Walls, Enemies, and Coins."
 
 Reading the Physics Introduction makes me consider, again, that KinematicsBody2D nodes can be used for gold bags. I
 would have to code the bounces, but KinematicsBody2d.move_and_collide() returns a KinematicCollision2D object which I
 can use to help with that. Still, though, if a RigidBody2D takes care of that by itself, why should I?
 
+Results
+"""""""
 
+I finally decided to use the RigidBody2D but was having trouble getting it to behave properly. When I threw a gold bag,
+no matter where I was on the screen, it would pop back to its initial position before moving. The documentation had
+warned me about that but, in my opinion, wasn't real good about explaining what to do about it. I finally found what I
+needed at:
+
+    https://www.youtube.com/watch?v=xsAyx2r1bQU
+
+The problem was that I had to use the information in the gold bag's transform state. See:
+
+    https://docs.godotengine.org/en/stable/classes/class_physics2ddirectbodystate.html
+
+Manipulating that information in an ``_integrate_forces`` function is how it needs to be controlled.
+
+Here are the current forms of ``StNick.gd`` and ``GoldBag.gd``.
+
+**StNick.gd**::
+
+    extends KinematicBody2D
+    class_name Player
+
+    export (int) var speed = 100
+    export (PackedScene) var GoldBag
+
+    onready var hand_position = $HandPosition
+    onready var target_position = $TargetPosition
+
+
+    var gold_bag: GoldBag = null
+
+
+    func _ready() -> void:
+        gold_bag = GoldBag.instance()			# temporary code for adding gold bag
+        gold_bag.initialize(hand_position.position)
+        add_child(gold_bag)
+
+
+    func _process(delta: float) -> void:
+        var movement_direction := Vector2.ZERO
+
+        if Input.is_action_pressed("up"):
+            movement_direction.y = -1
+        if Input.is_action_pressed("down"):
+            movement_direction.y = 1
+        if Input.is_action_pressed("left"):
+            movement_direction.x = -1
+        if Input.is_action_pressed("right"):
+            movement_direction.x = 1
+
+
+        movement_direction = movement_direction.normalized()
+        look_at(global_position + movement_direction)
+        move_and_slide(movement_direction * speed)
+
+
+    func _unhandled_input(event: InputEvent) -> void:
+        if event.is_action_pressed("throw"):
+            if gold_bag:
+                throw(gold_bag)
+
+
+    func throw(gold_bag):
+        var toss_direction = hand_position.global_position.direction_to(target_position.global_position)
+        gold_bag.toss(hand_position.global_position, toss_direction)
+
+**GoldBag.gd**::
+
+    extends RigidBody2D
+    class_name GoldBag
+
+
+    var impulse: int = 300
+    var direction: Vector2 = Vector2.ZERO
+    var tossed: bool = false
+
+
+    func initialize(position):
+        set_position(position)	# used only for development
+        mode = MODE_RIGID
+
+
+    func _integrate_forces(state: Physics2DDirectBodyState):
+        if tossed:
+            var xform = state.get_transform()
+            xform.origin = get_parent().hand_position.global_position
+            state.set_transform(xform)
+            apply_central_impulse(impulse * direction)
+            tossed = false
+        else:
+            if state.is_sleeping():
+                print("The gold bag has landed.")
+
+
+    func toss(start, direction):
+        tossed = true
+        mode = MODE_RIGID
+        self.direction = direction
+
+This is by no means final. The gold bags remain children of the St. Nicholas character and keep moving around with him.
+They can also be thrown again, though they pop back into his hand first. The animation isn't great either. It looks like
+a gold bag sliding on the floor more than a gold bag tossed through the air as seen from above. I have a lot of
+:ref:`refinement <refinement>` to do.
 
 .. _pocket_gold_bag:
 
 Gold Bags in the Pocket
 -----------------------
 
+.. _refinement:
+
+Improving the Gold Bags
+=======================
