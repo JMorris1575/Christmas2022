@@ -533,3 +533,43 @@ Gold Bags in the Pocket
 
 Improving the Gold Bags
 =======================
+
+Toward the end Part 15 of the Top-down Shooter Tutorial by jmbiv (around 33:10):
+
+    https://www.youtube.com/watch?v=S1Ao5SbqZL4&list=PLpwc3ughKbZexDyPexHN2MXLliKAovkpl&index=15
+
+he shows how to use a ``RemoteTransform2D`` node to control the camera movements instead of having the camera be a child
+of the player. That seems to me to be a way I can have the gold bags follow the player without having to be children of
+the player. The way he set it up was to create the ``RemoteTransform2D`` node as a child of the ``Player`` node: the one
+to be followed. Then, in the ``Player.gd`` script he created a variable to point to it and a function to be called by
+his ``Main.gd`` program to set the camera (in the ``Main`` node) to follow the player. Here are the steps I think I need
+to follow to apply this to getting my gold bags to remain in the hand of the ``StNick`` character until they are thrown
+and then stay on the ground:
+
+#. Create the ``RemoteTransform2D`` node in the ``StNick`` node. Name it ``StNickFollower``.
+#. Create an ``onready`` variable to hold it. (Guess as to proper sequence based on observation of his work: signals,
+   exports, regular vars, onreadys)
+#. Create a ``set_st_nick_follower`` function to be called by ``StNick.gd`` with the path to the ``HandPosition`` node.
+#. Write a line in ``func _ready`` in ``StNick.gd`` to call ``set_st_nick_follower`` with the path to ``HandPosition``.
+   (``gold_bag.set_st_nick_follower(hand_position.get_path())``.
+#. Experiment with the options having to do with rotation and position in the editor.
+
+After completing the first four steps and trying the game I noticed that the gold bag was still acting like a child of
+the ``StNick`` character. Not surprising since it was created in the ``StNick.gd`` script AS a child of the ``StNick``
+character.
+
+I decided to try my hand at creating a ``GoldBagManager`` node as a child of ``Main`` to manage the creation of gold
+bags. It's not going well. More details to follow.
+
+The gold bag doesn't seem to be following StNick's hand. That was because I set it up backwards. Since StNick is
+supposed to be the one being followed, the ``RemoteTransform2D`` node needs to be in the ``StNick`` node and the
+``NodePath`` to the gold bag needs to be set to it. Once I did that the gold bag followed St. Nick around, only... it
+was on his head, and tossing didn't work anymore. Perhaps the first thing to do upon tossing the gold bag is to release
+it from the hold of the ``StNickFollower``. Yes, that was it, but it took me a while to realize that the way to
+release it was to set the ``st_nick_follower.remote_path`` to the empty string ("").
+
+Now I just have to get the gold bag to appear in StNick's hand and prevent it from being thrown again once it is on the
+ground.
+
+The first part of that was easy. Somehow the ``HandPosition`` itself was changed to the middle of StNick's head. When I
+moved it, the gold bag moved there too.
