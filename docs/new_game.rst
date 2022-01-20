@@ -573,3 +573,46 @@ ground.
 
 The first part of that was easy. Somehow the ``HandPosition`` itself was changed to the middle of StNick's head. When I
 moved it, the gold bag moved there too.
+
+I write this a few days later but preventing the bag from being thrown again had to do with using a ``tossed`` variable
+initialized to ``false`` but set to true in the ``tossed()`` function.
+
+For some reason the ``_integrate_forces())`` function is not called until the bag is tossed and then it is called
+repeatedly. Can I turn it off?
+
+Yes, when a RigidBody2D is set to MODE_STATIC the ``_integrate_forces()`` function is not called. So here is the present
+form of ``GoldBag.gd``::
+
+    extends RigidBody2D
+    class_name GoldBag
+
+
+    var impulse: int = 300
+    var direction: Vector2 = Vector2.ZERO
+    var tossed: bool = false
+    var physics_triggered = false
+
+
+    func _integrate_forces(state: Physics2DDirectBodyState):
+        if state.is_sleeping() and physics_triggered:
+            set_deferred("mode", MODE_STATIC)
+        physics_triggered = true
+        apply_central_impulse(impulse * direction)
+        direction = Vector2.ZERO
+
+
+    func toss(start, direction):
+        if not tossed:
+            tossed = true
+            mode = MODE_RIGID
+            self.direction = direction
+
+The gold bag's ``mode`` is initialized, through the editor, to MODE_STATIC. When the toss button is pressed, ``tossed``
+is set to ``true`` and the ``mode`` is set to MODE_RIGID. The ``_integrate_forces`` function is automatically called
+repeatedly. The first time through, ``physics_triggered`` starts out false, so the ``mode`` remains as ``MODE_RIGID``.
+Then ``physics_triggered`` is set to true, the impulse is applied, then the direction set to ``Vector2.ZERO`` so that
+it is only applied once. When the body enters the "sleeping" state, its ``mode`` returns to ``MODE_STATIC`` and the
+physics process turns off. I found that if the sleeping state is checked right after the call to
+``apply_central_impulse()`` it never triggers. Probably because it is figuring the zero impulse. There is probably a
+better way to do this but this is working for now.
+
