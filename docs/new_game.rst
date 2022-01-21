@@ -52,7 +52,9 @@ want in the game but I think that is alright. Ideas will come to me as I start t
 Here is a table of contents:
 
 #. :ref:`initial_ideas`
+#. :ref:`first_steps`
 #. :ref:`gold_bags`
+#. :ref:`environment`
 
 .. _initial_ideas:
 
@@ -72,6 +74,8 @@ Initial Ideas
 #. Perhaps the challenge of each level will have to be completed in a certain amount of time.
 #. A HUD (Heads Up Display) can be used to display how many bags of gold St. Nicholas has left and the time remaining if
    that option is used.
+
+.. _first_steps:
 
 First Steps
 ===========
@@ -616,3 +620,99 @@ physics process turns off. I found that if the sleeping state is checked right a
 ``apply_central_impulse()`` it never triggers. Probably because it is figuring the zero impulse. There is probably a
 better way to do this but this is working for now.
 
+.. _environment:
+
+Building the Environment
+========================
+
+Edits to the Tilesheet
+----------------------
+
+I'm planning on using an edited version of the Kenney topdown_shooter_tilesheet. In Gimp, I've gotten into the
+``Color->Hue, Saturation and Value`` menu and lowered both the saturation and the value (or is is lightness?) This was
+to make it look more like the environment is in the dark. Perhaps I should also give it a slight blue tint.
+
+Using the Tilesheet in Godot
+----------------------------
+
+Godot's tilesheet process leaves something to be desired. It seems confusing and sometimes irreversible. Here are some
+notes for using it:
+
+General
+^^^^^^^
+
+These things must be done whenever you use a TileSheet:
+
+Adding the TileSheet
+""""""""""""""""""""
+
+#. Add a TileMap node to the scene.
+#. In the inspector, click next to "Tileset:" where it says "[empty]".
+#. Click "New Tileset" and select the tileset you want to use.
+#. Click the new "TileSet" resource to open the TileSet editor.
+#. Click the "[+]" button at the bottom left and select the TileSet you created above.
+#. You are now ready to create various kinds of tiles. You will have to drag select the first time to get the snap
+   option to appear, and adjust the size of the cells to match the tileset in the Snap Options that will now appear in
+   the inspector.
+
+Adding TileSheet Elements to the Environment
+""""""""""""""""""""""""""""""""""""""""""""
+
+#. Click on the TileMap node you want to contain the item or items you are going to add.
+#. Icons of the available tiles appear at the right. Click-select one to draw on the environment.
+#. Add the item in one of the following ways:
+
+   A. Left-click the environment where you want it to be placed. (Right click to erase.)
+   #. Shift-left-click to drag a line of them. (Shift-right-click to erase.)
+   #. Ctrl-Shift-left-click to drag a block of them. (Ctrl-Shift-right-click to erase.)
+
+#. Make sure that "Enaple Priority" is set the way you want.
+
+Single Tile
+^^^^^^^^^^^
+
+Single tiles are used to place individual items in the environment.
+
+#. Click on the "+ New Single Tile" button at the upper right.
+#. Click select the tile you want to use.
+#. Change its name in the inspector under "Selected Tile->Name" if desired. (There is a round button marked with an "i"
+   at the upper right that toggles the visibility of the names.
+
+AutoTile
+^^^^^^^^
+
+Auto tiles are used for such things as drawing buildings.
+
+#. Click on the "+ New AutoTile" button at the upper right.
+#. Drag around the desired region on the tile sheet.
+#. Give the region a name, if desired, by using the inspector under "Selected Tile->Name".
+
+Making it Automatic
+"""""""""""""""""""
+
+#. Click the "Bitmask" tab.
+#. In the inspector, under "Selected Tile" change Autotile Bitmask to 3.3 minimal if the subtiles are too large.
+#. Click to set the bitmask on all "open" areas -- places without walls. Left-click sets, right-click erases.
+#. If desired you can select an icon tile.
+
+Giving the Tiles a Collision Region
+"""""""""""""""""""""""""""""""""""
+
+#. If necessary, click on the name of the region you want to edit.
+#. Click on the Collision tab.
+#. Select each tile, one after another then:
+
+   A. Click on the Rectangle button.
+   #. Click back on the tile to create the collision area.
+   #. Don't forget to set the "is a" and "interacts with" levels on the corresponding TileMap node in the inspector.
+
+AtlasTile
+^^^^^^^^^
+
+Atlas tiles are used to draw such things as various types of ground.
+
+#. Click on the "+ New Atlas Tile" button at the upper right.
+#. Drag around the desired region on the tile sheet.
+#. Give the region a name, if desired, by using the inspector under "Selected Tile->Name".
+#. Adjust priority, if desired, by selecting a tile and typing in (or using the up and down arrows on the control) to
+   set the priority of each tile in the set.
