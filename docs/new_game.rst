@@ -11,7 +11,7 @@ come to me.
 Topdown Shooter Tutorial
 ************************
 
-I am currently (Starting in December 2021) working through the Topdown Shooter tutorial at:
+I am currently (starting in December 2021) working through the Topdown Shooter tutorial at:
 
 https://www.youtube.com/channel/UCLzFt-NdfCm8WFKTyqD0yJw
 
@@ -622,8 +622,8 @@ better way to do this but this is working for now.
 
 .. _environment:
 
-Building the Environment
-========================
+Environment and Camera
+======================
 
 Edits to the Tilesheet
 ----------------------
@@ -716,3 +716,13 @@ Atlas tiles are used to draw such things as various types of ground.
 #. Give the region a name, if desired, by using the inspector under "Selected Tile->Name".
 #. Adjust priority, if desired, by selecting a tile and typing in (or using the up and down arrows on the control) to
    set the priority of each tile in the set.
+
+Camera Movement
+---------------
+
+Now that I have the ability to build a large "playing field" I want to have the camera follow St. Nicholas around as he
+strives to give gold to the poor. The St. Nicholas character is not going to die, so I think I can just make the camera
+a child of the ``StNick`` node as Joe did at the beginning of Part 13 of the topdown shooter tutorial. To make it work I
+also had to click "Current" in the inspector, making it the current camera. As he did in the tutorial, I also enabled
+"Smoothing."
+
