@@ -287,7 +287,7 @@ I will start, as he did in his tutorial, with a ``GoldBag`` as a child of the ``
 right hand and then make it into it's own scene. I will create an ``objects`` directory for the ``GoldBag`` node in
 anticipation of other objects that may be added later.
 
-Once I did this I discovered a problem. Having two ``KinematicBody2D``s in contact with one another, with their
+Once I did this I discovered a problem. Having two ``KinematicBody2D`` nodes in contact with one another, with their
 ``CollisionShape2D``s overlapping meant they were always in a collision state. St. Nicholas went flying off the screen
 to the upper left. I had to set the Collision Layers and Collision Masks for each object. I put St. Nicholas in layer 1
 and turned off his interactions (turned off the mask) on layers one and two. I put the gold bag in layer 2 and turned
@@ -528,11 +528,6 @@ They can also be thrown again, though they pop back into his hand first. The ani
 a gold bag sliding on the floor more than a gold bag tossed through the air as seen from above. I have a lot of
 :ref:`refinement <refinement>` to do.
 
-.. _pocket_gold_bag:
-
-Gold Bags in the Pocket
------------------------
-
 .. _refinement:
 
 Improving the Gold Bags
@@ -725,4 +720,72 @@ strives to give gold to the poor. The St. Nicholas character is not going to die
 a child of the ``StNick`` node as Joe did at the beginning of Part 13 of the topdown shooter tutorial. To make it work I
 also had to click "Current" in the inspector, making it the current camera. As he did in the tutorial, I also enabled
 "Smoothing."
+
+Gold Bags and Targets
+=====================
+
+I've been putting this off for a while, partially because I don't know how to do it, and partially because I haven't
+decided what to do. My original thought of tossing the gold bags through a window isn't working the way I thought.
+Buildings are collision objects, so gold bags should bounce off of them -- even parts designated as windows. I say
+gold bags SHOULD bounce off of them because, currently, they just stick to them. I haven't finished whatever I'm
+supposed to do to get them to bounce.
+
+Currently I'm thinking of creating another layer for buildings, above the obstacles layer, but with no collisions, or,
+since it's already built in to the tilemap, I can use the inspector to turn collisions off for that layer. Then I can
+either create a special building that can accept gold bags or use some single tiles to paint over existing buildings and
+use an ``Area2D`` to detect the gold bag when it enters and trigger the animation.
+
+But, before I do any of that, I want to create a means of giving St. Nicholas a "pocket" to hold a few gold bags that he
+can then give to the poor.
+
+.. _pocket_gold_bag:
+
+Gold Bags in the Pocket
+-----------------------
+
+I think this is going to be something like the ``BulletManager`` in the jmbiv tutorial. There, the ``BulletManager`` is
+``Node2D`` that only contains a script and the script does very little, only having one function to handle a bullet that
+is spawned elsewhere. Here is what takes place when the player fires a bullet:
+
++----------------------------------------------+--------------------------------------------------+
+| **Sequence of Events**                       | **Additional Notes**                             |
++==============================================+==================================================+
+| 1. The "shoot" action is discovered in the   | The "shoot" action is set in the Input Map in    |
+|    _unhandled_input function of Player.gd,   | the Project Settings.                            |
+|    which calls "weapon.shoot()"              |                                                  |
++----------------------------------------------+--------------------------------------------------+
+| 2. The "shoot" function of the player's      | The "bullet fired" signal is created in          |
+|    weapon creates the bullet, calculates its | "GlobalSignals.gd" and has parameters of         |
+|    direction of motion, and emits the        | bullet, team, position and direction.            |
+|    "bullet fired" signal.                    |                                                  |
++----------------------------------------------+--------------------------------------------------+
+| 3. The "bullet_fired" signal is picked up by | The "BulletManager" uses the parameters to add   |
+|    "Main" and connected to the "handle_      | the bullet as its own child and set its team,    |
+|    bullet_spawned function of the            | position and direction of motion.                |
+|    "BulletManager."                          | "BulletManager" is already a child of "Main."    |
++----------------------------------------------+--------------------------------------------------+
+| 4. From that point on the "Bullet" takes care| A "Bullet" is an Area2D and uses a different     |
+|    of itself, moving, handling collsions, and| method for movement. in "_physics_process", the  |
+|    removing itself from the queue once it    | is calculated and added to the global_position   |
+|    enters a body with a "handle_hit"         | of the bullet.                                   |
+|    function.                                 |                                                  |
++----------------------------------------------+--------------------------------------------------+
+
+I think what I have in mind for the gold bags is quite a bit simpler than all that. Here is what I imagine the sequence
+of events to be:
+
+#. St. Nicholas first appears without a gold bag, but the number in his pocket is indicated in the UI.
+#. The player clicks the key or button designated for getting the gold bag out and ready to throw.
+#. The gold bag is created and made visible in St. Nick's hand. Perhaps a sound can go with that. Now it is ready to
+   throw.
+
+This would seem to require:
+
+#. A variable within ``StNick.gd`` indicating the number of gold bags left.
+#. A function to initialize the number of gold bags. (Different for different levels?)
+#. Setting up the key and button for getting the gold bag out and ready to throw.
+#. A boolean variable indicating the gold bag is visible (which may attract thieves). This should probably be in
+   ``GoldBag.gd``. Something like this may also be needed to indicate when a gold bag can be thrown -- only when it's
+   out of his pocket.
+
 
