@@ -788,4 +788,25 @@ This would seem to require:
    ``GoldBag.gd``. Something like this may also be needed to indicate when a gold bag can be thrown -- only when it's
    out of his pocket.
 
+.. _targets:
+
+Creating Targets for Gold Bags
+------------------------------
+
+I tried adding a ``Targets`` layer and plopping a "window" without a collision shape on one wall of a building from the
+building layer, hoping St. Nick could toss the bag through it but, unfortunately, the building that still existed
+underneath still blocked the gold bag.
+
+That time I copied the ``Targets`` layer from one of the others to be able to reuse the texture map. I'll try again but,
+this time, create a new ``TileMap`` node with a new copy of the tilesheet. This one will be identical to the other but
+with no collision shapes. The buildings can be built from single tiles. I will have to devise some method of building a
+building underneath, in the ``Buildings`` layer to prevent St. Nick, or the gold bags, from going through the walls.
+
+That worked! Well, except for the part about St. Nicholas being able to walk through the window/door. I fixed that by
+giving my ``Target`` windows a collision shape and setting the collision layers so that they interacted with St. Nick
+but not with gold bags.
+
+Currently I have to add a blank (black) tile in the building layer under the window tile otherwise the grass shows
+through. I may want to edit the texture to put a black background in all four of the window tiles.
+
 
