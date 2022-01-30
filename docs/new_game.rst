@@ -809,4 +809,43 @@ but not with gold bags.
 Currently I have to add a blank (black) tile in the building layer under the window tile otherwise the grass shows
 through. I may want to edit the texture to put a black background in all four of the window tiles.
 
+Making Gold Bag Activity More Elegant
+-------------------------------------
+
+Now that I am finally able to toss gold bags into buildings I want to improve the look and feel of gold bag actions.
+Specifically I would like to:
+
+#. Have the gold bag fall open when it hits the ground, at least if it lands on a proper target. (See
+   :ref:`open_gold_bag`)
+#. Have the gold bag bounce off a wall when hitting it directly instead of sticking to it. (See :ref:`gold_bag_bounce`)
+#. Have the gold bag stop more suddenly somehow so it looks like it's actually landing on the ground instead of sliding
+   over it. (See :ref:`sudden_stop`)
+#. Play a clinking sound when landing on the ground or when hitting a wall. (See :ref:`adding_sound`)
+#. Allow St. Nicholas to pick up a gold bag that has been dropped along the roadside -- if he can get there before a
+   thief or an animal gets it, or maybe just one of the townspeople. (See :ref:`pick_up_gold_bag`)
+
+.. _open_gold_bag:
+
+Opening the Gold Bag when it Lands
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. _gold_bag_bounce:
+
+Bouncing the Gold Bag
+^^^^^^^^^^^^^^^^^^^^^
+
+.. _sudden_stop:
+
+Bringing the Gold Bag to a Sudden Stop
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. _adding_sound:
+
+Adding Sound
+^^^^^^^^^^^^
+
+.. _pick_up_gold_bag:
+
+Picking Up a Gold Bag
+^^^^^^^^^^^^^^^^^^^^^
 
