@@ -815,24 +815,47 @@ Making Gold Bag Activity More Elegant
 Now that I am finally able to toss gold bags into buildings I want to improve the look and feel of gold bag actions.
 Specifically I would like to:
 
+#. Have the gold bag bounce off a wall when hitting it directly instead of sticking to it. (See :ref:`gold_bag_bounce`)
 #. Have the gold bag fall open when it hits the ground, at least if it lands on a proper target. (See
    :ref:`open_gold_bag`)
-#. Have the gold bag bounce off a wall when hitting it directly instead of sticking to it. (See :ref:`gold_bag_bounce`)
 #. Have the gold bag stop more suddenly somehow so it looks like it's actually landing on the ground instead of sliding
    over it. (See :ref:`sudden_stop`)
 #. Play a clinking sound when landing on the ground or when hitting a wall. (See :ref:`adding_sound`)
 #. Allow St. Nicholas to pick up a gold bag that has been dropped along the roadside -- if he can get there before a
    thief or an animal gets it, or maybe just one of the townspeople. (See :ref:`pick_up_gold_bag`)
 
+.. _gold_bag_bounce:
+
+Bouncing the Gold Bag
+^^^^^^^^^^^^^^^^^^^^^
+
+When a gold bag bounces off a wall at an 45° angle, it looks good, it even gives the bag a bit of a spin after the
+bounce. (I wonder if I should give it some spin before the bounce.) But if the gold bag hits the wall at 90°, or an
+angle of incidence of 0°, it just stops, kind of stuck to the wall. I'm not sure why this should be. Perhaps I can
+research it...
+
+It turned out to be really easy, though I didn't recognize it at first. In the Inspector for the Gold Bag node, a
+RigidBody2D, I clicked on the PhysicsMaterial and set the Bounce all the way to 1. That seemed to solve the problem.
+
 .. _open_gold_bag:
 
 Opening the Gold Bag when it Lands
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. _gold_bag_bounce:
+Instead of letting the gold bag slide to a stop, as it does outside the building, I'd like it to come more suddenly to
+a stop and fall "open," actually just switching the image. It seems I should be able to use an ``Area2D`` node to detect
+when a gold bag enters and then trigger whatever actions I want to apply from there. Unfortunately, I haven't been able
+to get the ``Area2D`` to trigger. I have it in its own "Landing Zone" collision layer, marked to interact with gold
+bags, and the gold bags are marked to interact with the "Landing Zone" but nothing happens when I toss the gold bag into
+the Landing Zone. Time for more research...
 
-Bouncing the Gold Bag
-^^^^^^^^^^^^^^^^^^^^^
+According to:
+
+    https://www.youtube.com/watch?v=cQyyD-ykAHU
+
+the signal I need to be using is ``body_entered`` rather than ``area_entered`` which is what I am currently using and
+which only applies when another ``Area2D`` enters. Once I made that change I could detect the entrance of the gold bag.
+
 
 .. _sudden_stop:
 
