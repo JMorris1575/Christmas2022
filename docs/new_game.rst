@@ -862,6 +862,13 @@ which only applies when another ``Area2D`` enters. Once I made that change I cou
 Bringing the Gold Bag to a Sudden Stop
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+I'd like the gold bag to more suddenly come to a stop when landing in a target area -- justifying the bag falling open.
+Perhaps I should do that with every throw, perhaps not. For now I'll depend on the ``Area2D`` detection to change the
+friction.
+
+Changing the value of the friction property didn't seem to do much. After some experimentation I discovered that
+changing the value of the linear_damp property gave me more what I wanted.
+
 .. _adding_sound:
 
 Adding Sound
