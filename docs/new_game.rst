@@ -862,12 +862,43 @@ which only applies when another ``Area2D`` enters. Once I made that change I cou
 Bringing the Gold Bag to a Sudden Stop
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Using an Area2D
+"""""""""""""""
+
 I'd like the gold bag to more suddenly come to a stop when landing in a target area -- justifying the bag falling open.
 Perhaps I should do that with every throw, perhaps not. For now I'll depend on the ``Area2D`` detection to change the
 friction.
 
 Changing the value of the friction property didn't seem to do much. After some experimentation I discovered that
 changing the value of the linear_damp property gave me more what I wanted.
+
+Using an Animation Player
+"""""""""""""""""""""""""
+
+It occurs to me that the animation of the gold bag might be assisted by the use of an animation player to call the
+shots at the right times. Here is a list of things that I think an animation player can handle:
+
+#. Calling a function to start the toss. (Thus, the toss button will start the animation player.)
+#. Make the image of the gold bag grow slightly as it rises.
+#. Make the image of the gold bag shrink as it falls.
+#. Play the coin clink sound when it hits the ground.
+#. Sharply increase the linear_damp property after it falls.
+#. Change the image to an open gold bag at the end of the toss.
+
+Here is the sequence I followed while trying to implement this idea:
+
++-------------------------------------------+--------------------------------------------------------------------------+
+| Action                                    | Notes                                                                    |
++===========================================+==========================================================================+
+| Add an Animation Player to the GoldBag    | I added an animation called "toss" and gave it a length of 0.5 seconds,  |
+| node. Call it TossAnimation.              | which is about the time an object would take to fall from a height of    |
+|                                           | one meter.                                                               |
++-------------------------------------------+--------------------------------------------------------------------------+
+| Add a property track to the Sprite node   | I set two keys: one at the beginning for the regular bag, one toward the |
+|                                           | end for the open bag. Timing needs attention but it works.               |
++-------------------------------------------+--------------------------------------------------------------------------+
+
+
 
 .. _adding_sound:
 
