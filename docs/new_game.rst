@@ -228,7 +228,7 @@ it to ``true``.
 
 I tested the onscreen buttons with the mouse and they worked fine. Then I set the ``Visibility Mode`` to
 ``TouchScreen Only`` for each of the buttons but they still show up on my computer screen. That is because when
-``Emulate Touch From Mouse`` is on, ``TouchScreenButton``s are always visible.
+``Emulate Touch From Mouse`` is on, ``TouchScreenButton``\s are always visible.
 
 .. _st_nick_to_scene:
 
@@ -288,7 +288,7 @@ right hand and then make it into it's own scene. I will create an ``objects`` di
 anticipation of other objects that may be added later.
 
 Once I did this I discovered a problem. Having two ``KinematicBody2D`` nodes in contact with one another, with their
-``CollisionShape2D``s overlapping meant they were always in a collision state. St. Nicholas went flying off the screen
+``CollisionShape2D``\s overlapping meant they were always in a collision state. St. Nicholas went flying off the screen
 to the upper left. I had to set the Collision Layers and Collision Masks for each object. I put St. Nicholas in layer 1
 and turned off his interactions (turned off the mask) on layers one and two. I put the gold bag in layer 2 and turned
 off his interactions with layers one and two. I set both of them to interact with layer 3 objects whatever they may turn
@@ -325,7 +325,7 @@ This may take some doing so I'll break it into steps:
 Separating the GoldBag into its own Scene
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This was easy and will help in the process of supplying ``GoldBag``s in the future. This can be when St. Nicholas enters
+This was easy and will help in the process of supplying ``GoldBag``\s in the future. This can be when St. Nicholas enters
 a new level and starts with a certain number of gold bags or when he has lost some through bad throws or thieves and has
 to go back home and pick up some more.
 
@@ -400,14 +400,14 @@ their abilities. The Godot documentation has what I think will be good to start 
 
         https://docs.godotengine.org/en/stable/tutorials/physics/using_kinematic_body_2d.html
 
-I will try to study that first. (This is the one using ``KinematicBody2D``s to implement bullets that can bounce off
+I will try to study that first. (This is the one using ``KinematicBody2D``\s to implement bullets that can bounce off
 walls.)
 
 No sooner did I start that it directed me to their Physics Introduction:
 
         https://docs.godotengine.org/en/stable/tutorials/physics/physics_introduction.html#doc-physics-introduction
 
-and now I'm thinking maybe gold bags should be ``RigidBody2D``s instead. They might be able to do the bounces on their
+and now I'm thinking maybe gold bags should be ``RigidBody2D``\s instead. They might be able to do the bounces on their
 own and may also benefit from using a physics material to provide such things as friction and the bounce of an object.
 Physics materials are discussed at:
 
@@ -760,8 +760,8 @@ is spawned elsewhere. Here is what takes place when the player fires a bullet:
 |    "bullet fired" signal.                    |                                                  |
 +----------------------------------------------+--------------------------------------------------+
 | 3. The "bullet_fired" signal is picked up by | The "BulletManager" uses the parameters to add   |
-|    "Main" and connected to the "handle_      | the bullet as its own child and set its team,    |
-|    bullet_spawned function of the            | position and direction of motion.                |
+|    "Main" and connected to the               | the bullet as its own child and set its team,    |
+|    "handle_bullet_spawned function of the    | position and direction of motion.                |
 |    "BulletManager."                          | "BulletManager" is already a child of "Main."    |
 +----------------------------------------------+--------------------------------------------------+
 | 4. From that point on the "Bullet" takes care| A "Bullet" is an Area2D and uses a different     |
@@ -820,7 +820,7 @@ Specifically I would like to:
    :ref:`open_gold_bag`)
 #. Have the gold bag stop more suddenly somehow so it looks like it's actually landing on the ground instead of sliding
    over it. (See :ref:`sudden_stop`)
-#. Play a clinking sound when landing on the ground or when hitting a wall. (See :ref:`adding_sound`)
+#. Play a clinking sound when landing on the ground or when hitting a wall. (See :ref:`sudden_stop`)
 #. Allow St. Nicholas to pick up a gold bag that has been dropped along the roadside -- if he can get there before a
    thief or an animal gets it, or maybe just one of the townspeople. (See :ref:`pick_up_gold_bag`)
 
@@ -894,16 +894,37 @@ Here is the sequence I followed while trying to implement this idea:
 | node. Call it TossAnimation.              | which is about the time an object would take to fall from a height of    |
 |                                           | one meter.                                                               |
 +-------------------------------------------+--------------------------------------------------------------------------+
-| Add a property track to the Sprite node   | I set two keys: one at the beginning for the regular bag, one toward the |
-|                                           | end for the open bag. Timing needs attention but it works.               |
+| Add a property track to animate the       | I set two keys: one at the beginning for the regular bag, one toward the |
+| texture property of the Sprite node.      | end for the open bag. Timing needs attention but it works.               |
++-------------------------------------------+--------------------------------------------------------------------------+
+| Add a property track to animate the       | I found the scale property by scrolling down to the Sprite's Node2D      |
+| scale property of the Sprite node.        | properties. See https://www.youtube.com/watch?v=nnMu8s8RlYM from about   |
+|                                           | half way through the video.                                              |
++-------------------------------------------+--------------------------------------------------------------------------+
+| Fixed the texture and scale properties    | The animation leaves the gold bag open and smaller. It needs to be       |
+| when creating a gold bag.                 | created with the proper texture and size. See the code                   |
+|                                           | :ref:`here <fix_texture>`.                                               |
++-------------------------------------------+--------------------------------------------------------------------------+
+| Add the coin sound to the end of the      | I first needed to add an AudioStreamPlayer node to the GoldBag scene. I  |
+| animation, as the gold bag opens.         | called it LandingSound.                                                  |
++-------------------------------------------+--------------------------------------------------------------------------+
+| Adjusted the z-index of StNick so that he | I first tried animating the z-index of the gold bag itself but then it   |
+| is rendered above the gold bags.          | disappeared under the ground when it landed.                             |
 +-------------------------------------------+--------------------------------------------------------------------------+
 
+.. _fix_texture:
 
+**Code for Fixing Gold Bag Texture and Scale**::
 
-.. _adding_sound:
+    func create_gold_bag(hand_position, main_node) -> GoldBag:
+        gold_bag = GOLD_BAG.instance()
+        var texture = load("res://objects/images/bag-of-gold-cartoon-small.png")
+        var sprite = gold_bag.get_node("Sprite")
+        sprite.texture = texture
+        sprite.scale = Vector2(1, 1)
+        main_node.add_child(gold_bag)
+        return gold_bag
 
-Adding Sound
-^^^^^^^^^^^^
 
 .. _pick_up_gold_bag:
 
