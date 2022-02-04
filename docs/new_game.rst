@@ -888,7 +888,7 @@ shots at the right times. Here is a list of things that I think an animation pla
 Here is the sequence I followed while trying to implement this idea:
 
 +-------------------------------------------+--------------------------------------------------------------------------+
-| Action                                    | Notes                                                                    |
+| **Action**                                | **Notes**                                                                |
 +===========================================+==========================================================================+
 | Add an Animation Player to the GoldBag    | I added an animation called "toss" and gave it a length of 0.5 seconds,  |
 | node. Call it TossAnimation.              | which is about the time an object would take to fall from a height of    |
@@ -911,10 +911,19 @@ Here is the sequence I followed while trying to implement this idea:
 | Adjusted the z-index of StNick so that he | I first tried animating the z-index of the gold bag itself but then it   |
 | is rendered above the gold bags.          | disappeared under the ground when it landed.                             |
 +-------------------------------------------+--------------------------------------------------------------------------+
+| Add a sound for when a gold bag collides  | I used the GoldBag's body_entered signal, set contacts_reported = true   |
+| with something.                           | and contacts_monitored = 1 in the Inspector and added an                 |
+|                                           | AudioStreamPlayer called CollisionSound. I had to re-import the desired  |
+|                                           | sound file and turn off "looping" there and in the inspector.            |
++-------------------------------------------+--------------------------------------------------------------------------+
+| Add a property track to the GoldBag's     | I used three keys: one at the beginning set to -1, one just one step     |
+| angular_damping property to let it rotate | before the landing set to -1, and one at the landing set to 20 to allow  |
+| after a bounce but stop upon landing.     | for a slight bit of rotation after the landing.                          |
++-------------------------------------------+--------------------------------------------------------------------------+
 
 .. _fix_texture:
 
-**Code for Fixing Gold Bag Texture and Scale**::
+**Code for Fixing Gold Bag Texture and Scale** (see above)::
 
     func create_gold_bag(hand_position, main_node) -> GoldBag:
         gold_bag = GOLD_BAG.instance()
@@ -924,6 +933,10 @@ Here is the sequence I followed while trying to implement this idea:
         sprite.scale = Vector2(1, 1)
         main_node.add_child(gold_bag)
         return gold_bag
+
+Detecting a Success
+^^^^^^^^^^^^^^^^^^^
+
 
 
 .. _pick_up_gold_bag:
