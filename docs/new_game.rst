@@ -937,6 +937,34 @@ Here is the sequence I followed while trying to implement this idea:
 Detecting a Success
 ^^^^^^^^^^^^^^^^^^^
 
+Detecting when St. Nicholas has successfully tossed a bag of gold into a poor person's house is quite simple using an
+Area2D. Simply send an ``_on_Area2D_body_entered`` signal and process it there. I put it in ``GoldBagManager.gd`` and,
+to start, simply printed a message from the poor person thanking St. Nicholas.
+
+But what should happen? Perhaps the number of successes can be counted and displayed next to some smiling faces on the
+scoreboard. Or, each success could score a number of points. In any case, it shouldn't be hard to implement, the
+question is, where do the points go? In ``Main.gd``? In ``Player.gd``? In some general repository of game information?
+I looked at the *Discovering Godot* course I got through Udemy:
+
+    https://www.udemy.com/course/draft/1647296/learn/lecture/14615846#overview
+
+to see what he did. He used a separate repository of game information he called ``gamestate.gd`` which, like
+``actor.gd`` and ``ai.gd`` scripts in the Topdown Shooter tutorial, can be related to several different nodes or
+scenes. That's what I will do. Here is what I did:
+
+#. Created a ``Gamestate.gd`` script in the main folder: ``:res:``.
+#. Gave it the class name of "Gamestate".
+#. Put in a variable called ``smiles`` as an integer initialized set to zero.
+#. Added a ``Node`` to ``Main`` called ``Gamestate`` and clicked the add script button. It recognized that
+   ``Gamestate.gd`` already existed and I took the option of loading it.
+#. Following the "Discovering Godot" course I put ``add_to_group("Gamestate")`` in a ``_ready()`` function.
+#. Using the technique he used in the course I put ``get_tree().call_to_group("Gamestate", "add_smiles", 1)``.
+
+I used a ``add_smiles()`` function, instead of ``add_smile()`` with the idea that I might want to associate the number
+of people affected by St. Nick's generosity with the Area2D that marks the targets. I could make each ``Area2D`` into
+a target scene with it's own tilemap and export variable for the number of people affected and perhaps other things that
+might occur to me later. I would still have to build special buildings to provide the obstacles, or perhaps I could use
+the obstacle layer under the target building (without collision shapes) to provide for collisions. Hmmm...
 
 
 .. _pick_up_gold_bag:
