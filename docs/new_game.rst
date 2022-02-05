@@ -253,7 +253,7 @@ implement the behavior of the bags of gold. Here is what needs to be done:
 #. Find or Create an Icon for the gold bags. (See :ref:`gold_bag_icon`)
 #. Create a separate scene for gold bags. (See :ref:`create_gold_bag`)
 #. Implement the process for St. Nicholas to throw a gold bag. (See :ref:`throwing_gold_bag`)
-#. Implement the hiding and revealing process for gold bags. (See :ref:`pocket_gold_bag`)
+#. Implement the hiding and revealing process for gold bags. (See :ref:`gold_bag_from_pocket`)
 
 .. _gold_bag_icon:
 
@@ -738,10 +738,10 @@ use an ``Area2D`` to detect the gold bag when it enters and trigger the animatio
 But, before I do any of that, I want to create a means of giving St. Nicholas a "pocket" to hold a few gold bags that he
 can then give to the poor.
 
-.. _pocket_gold_bag:
+.. _gold_bag_from_pocket:
 
-Gold Bags in the Pocket
------------------------
+Getting Gold Bags from the Pocket
+---------------------------------
 
 I think this is going to be something like the ``BulletManager`` in the jmbiv tutorial. There, the ``BulletManager`` is
 ``Node2D`` that only contains a script and the script does very little, only having one function to handle a bullet that
@@ -966,9 +966,63 @@ a target scene with it's own tilemap and export variable for the number of peopl
 might occur to me later. I would still have to build special buildings to provide the obstacles, or perhaps I could use
 the obstacle layer under the target building (without collision shapes) to provide for collisions. Hmmm...
 
+<Discuss implementing the above here>
+
+More Gold Bag Operations
+------------------------
+
+Initial Thoughts
+^^^^^^^^^^^^^^^^
+
+It might be useful to enable St. Nicholas to pick up a gold bag he drops, if he can do it before something else happens
+to it, like an animal scurrying in to whisk it away, or a thief be attracted to it, or one of the townspeople. When he
+picks it up it should go back into his pocket, out of sight. Or maybe not, he might want to try to throw it again right
+away. But he should be able to put it back in his pocket if he is going to be travelling for a while, no sense
+attracting thieves!
+
+Here is a list of things to implement:
+
+#. Picking up a gold bag from the ground. (See :ref:`pick_up_gold_bag`)
+#. Putting a gold bag back in his pocket. (See :ref:`pocket_gold_bag`)
 
 .. _pick_up_gold_bag:
 
 Picking Up a Gold Bag
 ^^^^^^^^^^^^^^^^^^^^^
 
+It would seem that St. Nicholas would have to be close to the gold bag, but not on top of it, and facing the gold bag
+to pick it up. Once all those conditions are met the alt-G key combination should play a sound and place the gold bag
+back in St. Nick's hand. There will also have to be another icon for cell phone and tablet players to use. Here is what
+I think I need to do:
+
+#. Add the alt-G key combination to a ``pick_up`` action.
+#. Add a new TouchScreenButton for the ``pick_up`` action.
+#. Decide on the distance range within which a gold bag can be retrieved.
+#. Determine whether the gold bag is someplace where it would be visible to St. Nick. The *Discovering Godot* course may
+   be useful here, the part in Heist Miesters with the flashlights.
+#. If all conditions are met, play a "collecting gold coins sound" and put the gold bag in St. Nick's hand.
+
+Here are some notes in implementing the above:
+
+#. Adding an action activated by ALT-G turned out to be more complicated than I thought. Even though I added a
+   ``pick_up_gold_bag`` action and connected it to the ALT-G combination, the ``get_gold_bag`` action fired anyway
+   because the G key was pressed. I had to add some logic to the input section of St. Nick's ``_process`` function to
+   distinguish between the two cases.
+#. I copied the TossButton and adjusted the x values of the positions of the two similar buttons. Temporarily I'm using
+   the purple-background version of the toss button for the pick up button until I can get a better icon -- perhaps for
+   both of those buttons.
+#. From the size of the ``StNick`` sprite I would say the gold bag must be between 10 and 30 pixels away from his
+   ``global_position`` and within a 160° field of view.
+#. Determining whether all conditions were met required that I add each gold bag to a ``GoldBag`` group, which I did in
+   the inspector. then I needed to add a ``received`` variable to indicate if the gold bag has been taken by its
+   intended receiver or by someone else. Finally, for each gold bag that has been tossed (and not still in St. Nick's
+   hand) but not received:
+
+   A. Calculate the distance to the gold bag: (easy vector math (gold_bag_position - player_postion).length)
+   #. Determine whether it is in StNick's field of view. (See
+      https://www.udemy.com/course/draft/1647296/learn/lecture/17264166#overview starting at about 7:00.)
+
+.. _pocket_gold_bag:
+
+Pocketing a Gold Bag
+^^^^^^^^^^^^^^^^^^^^
