@@ -1015,8 +1015,10 @@ Here are some notes in implementing the above:
    ``global_position`` and within a 160° field of view.
 #. Determining whether all conditions were met required that I add each gold bag to a ``GoldBag`` group, which I did in
    the inspector. then I needed to add a ``received`` variable to indicate if the gold bag has been taken by its
-   intended receiver or by someone else. Finally, for each gold bag that has been tossed (and not still in St. Nick's
-   hand) but not received:
+   intended receiver or by someone else. Finally, for each gold bag that has been tossed (thus not still in St. Nick's
+   hand) but not received: [I added a collision poly to St. Nick to use to detect the presence of a tossed and not
+   received gold bag. It will be better, eventually, but I'm still trying to get it to work properly. Shouldn't it be
+   able to detect two gold bags one atop the other?)
 
    A. Calculate the distance to the gold bag: (easy vector math (gold_bag_position - player_postion).length)
    #. Determine whether it is in StNick's field of view. (See
