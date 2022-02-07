@@ -1012,17 +1012,74 @@ Here are some notes in implementing the above:
    the purple-background version of the toss button for the pick up button until I can get a better icon -- perhaps for
    both of those buttons.
 #. From the size of the ``StNick`` sprite I would say the gold bag must be between 10 and 30 pixels away from his
-   ``global_position`` and within a 160° field of view.
+   ``global_position`` and within a certain area in front of him.
+#. I added an ``Area2D`` called ``PickUpArea`` to the ``StNick`` scene to help determine whether a gold bag is in reach.
+   I added a ``CollisionPolygon2D`` to that and drew a shape I thought about right. I connected the ``body_entered`` amd
+   ``body_exited`` signals of ``PickUpArea`` to change the state of an ``in_reach`` variable in the gold bags. I checked
+   to see if it was a ``GoldBag`` that entered with ``if "GoldBag" in body.name`` because when there is more than one
+   gold bag they get names like: ``@GoldBag@2``.
 #. Determining whether all conditions were met required that I add each gold bag to a ``GoldBag`` group, which I did in
    the inspector. then I needed to add a ``received`` variable to indicate if the gold bag has been taken by its
    intended receiver or by someone else. Finally, for each gold bag that has been tossed (thus not still in St. Nick's
-   hand) but not received: [I added a collision poly to St. Nick to use to detect the presence of a tossed and not
-   received gold bag. It will be better, eventually, but I'm still trying to get it to work properly. Shouldn't it be
-   able to detect two gold bags one atop the other?)
+   hand) but not received a series of pick-up actions take place:
 
-   A. Calculate the distance to the gold bag: (easy vector math (gold_bag_position - player_postion).length)
+   A. A sound plays to indicate collecting the coins into the bag.
+   #. The open bag shrinks to nothing very quickly.
+   #. The closed bag grow while moving to St. Nick's hand.
+   #. The ``GoldBag`` variables ``tossed`` and ``in_reach`` are both set to false.
+   #. The gold bag's position must again follow St. Nick's hand so that it will be thrown from there. (See
+      :ref:`below <pin_gold_bag>`.)
+
+
    #. Determine whether it is in StNick's field of view. (See
       https://www.udemy.com/course/draft/1647296/learn/lecture/17264166#overview starting at about 7:00.)
+
+.. _pin_gold_bag:
+
+Once picking up a gold bag from the ground, I thought I could make it follow St. Nick with the following command:
+
+    ``st_nick_follower.remote_path = gold.bag.get_path()``
+
+which it did, but upon tossing the gold bag again it would revert back to the position it had when on the ground. By
+accident I discovered that when I accessed the gold bag's global position, at least in a print statement, the problem
+was corrected. I didn't think I could count on that, though, so I studied up on how to change the position of an object
+in ``_integrate_forces`` and ended up with the following:
+
+#. In the ``GoldBag`` scene I created two new variables: ``new_position`` a ``Vector2`` orinially set to
+   ``Vector2.ZERO``, and ``change_position``, a boolean originally set to ``false``.
+#. Created a ``reposition`` function in ``GoldBag`` as follows::
+
+    func reposition(new_place: Vector2):
+        new_position = new_place
+        change_position = true
+
+#. Added a section to the beginning of ``_integrate_forces`` as follows::
+
+    	if change_position:
+            var new_transform = state.get_transform()
+            new_transform.origin = new_position
+            state.set_transform(new_transform)
+            change_position = false
+
+#. Called ``gold_bag.reposition(hand_position.global_position)`` in ``StNick``\s ``throw`` method.
+
+There is still more that needs to be done. For instance, after tossing a bag, tossing a second one, then going back and
+picking up the first bag; if I toss it, it just drops silently to the ground and can't be picked up. Doing some print-
+debugging I see that is because the ``throw`` method uses the global value of ``gold_bag`` which needs to be changed in
+``pick_up_gold_bag``. thrown, not the one in St. Nick's hand. Adding ``self.gold_bag = gold_bag`` to the
+``pick_up_gold_bag`` function solved that problem.
+
+There is still a problem with trying to pick up more than one gold bag at a time. If two or more are withing the
+``PickUpArea`` when I do a pick-up action, they all get picked up, but only one ends up in St. Nick's hand. The others
+remain on the ground, closed and unable to be picked up. I think I need to break out of the loop that iterates through
+all the gold bags so that it stops after finding the first one.
+
+That worked but, while checking it, I noticed that St. Nick threw one of the gold bags backwards! I don't know why. When
+I tried it again it worked fine. I hope it's not one of those difficult to reproduce problems that are so difficult to
+solve but keep happening every now and then.
+
+
+
 
 .. _pocket_gold_bag:
 
