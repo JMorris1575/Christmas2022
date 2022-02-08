@@ -1066,8 +1066,7 @@ in ``_integrate_forces`` and ended up with the following:
 There is still more that needs to be done. For instance, after tossing a bag, tossing a second one, then going back and
 picking up the first bag; if I toss it, it just drops silently to the ground and can't be picked up. Doing some print-
 debugging I see that is because the ``throw`` method uses the global value of ``gold_bag`` which needs to be changed in
-``pick_up_gold_bag``. thrown, not the one in St. Nick's hand. Adding ``self.gold_bag = gold_bag`` to the
-``pick_up_gold_bag`` function solved that problem.
+``pick_up_gold_bag``. Adding ``self.gold_bag = gold_bag`` to the ``pick_up_gold_bag`` function solved that problem.
 
 There is still a problem with trying to pick up more than one gold bag at a time. If two or more are withing the
 ``PickUpArea`` when I do a pick-up action, they all get picked up, but only one ends up in St. Nick's hand. The others
@@ -1075,13 +1074,43 @@ remain on the ground, closed and unable to be picked up. I think I need to break
 all the gold bags so that it stops after finding the first one.
 
 That worked but, while checking it, I noticed that St. Nick threw one of the gold bags backwards! I don't know why. When
-I tried it again it worked fine. I hope it's not one of those difficult to reproduce problems that are so difficult to
+I tried it again it worked fine. I hope it's not one of those difficult to reproduce problems that are also difficult to
 solve but keep happening every now and then.
 
-
+The next day I checked it again and it worked fine, though the pick-up animation definitely needs improvement. I did see
+a brief flash of the bag back at it's pick-up position when throwing it once. Perhaps a fluke or something that will
+happen occasionally if the system gets to the ``toss`` function before it has displayed the repositioned gold bag.
 
 
 .. _pocket_gold_bag:
 
 Pocketing a Gold Bag
 ^^^^^^^^^^^^^^^^^^^^
+
+Putting a gold bag back in St. Nick's pocket is actually a matter of destroying it and adding one to the number of bags
+(``num_bags`` currently defined in ``StNick.gd``. I wonder if it should be in ``GoldBagManager.gd``.) Before the bag is
+destroyed, however, it should play an animation where it shrinks to nothing. Here is my plan:
+
+#. Create an action, tied to the "P" key to pocket the gold bag in St. Nick's hand.
+#. Create a ``pocket_gold_bag`` function in ``StNick.gs`` to pocket the currently held gold bag (or other future gifts?).
+#. Call the ``pocket_gold_bag`` function when the "P" key is pressed.
+#. Create a ``back_to_pocket`` animation in ``GoldBagAnimations``.
+#. Once the animation has stopped playing, destroy the gold bag and increment the ``num_bags`` counter.
+#. Add a ``TouchScreenButton`` for the pick-up action.
+
+In the process of implementing the above, I changed the name of the global ``gold_bag`` variable in ``StNick.gd`` to
+``held_gold_bag`` so that I could identify when St. Nick was holding a gold bag and which one he was holding. I
+eliminated the ``bag_in_hand`` variable since it was no longer needed.
+
+Things ToDo
+"""""""""""
+
+It would be good to add some motion to the pick-up animation to move it under St. Nick's body to simulate it going into
+his garments.
+
+My choice of key commands is proving to be unintuitive. G for grasp and Alt-G for pick up off the ground and P for
+pocketing make sense in a certain way but P could also serve for pick up off the ground and Alt-G is just too messy to
+do during the game. I'll have to think of something better.
+
+The animation for picking up a gold bag from the ground is awful. See if it can be helped by temporarily changing the
+gold bag to a static body. Then maybe it can be moved by the animation player.
