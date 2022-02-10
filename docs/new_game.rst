@@ -1105,12 +1105,47 @@ eliminated the ``bag_in_hand`` variable since it was no longer needed.
 Things ToDo
 """""""""""
 
-It would be good to add some motion to the pick-up animation to move it under St. Nick's body to simulate it going into
-his garments.
+It would be good to add some motion to the ``back_to_pocket`` animation to move it under St. Nick's body to simulate it
+going into his garments.
 
 My choice of key commands is proving to be unintuitive. G for grasp and Alt-G for pick up off the ground and P for
 pocketing make sense in a certain way but P could also serve for pick up off the ground and Alt-G is just too messy to
 do during the game. I'll have to think of something better.
 
 The animation for picking up a gold bag from the ground is awful. See if it can be helped by temporarily changing the
-gold bag to a static body. Then maybe it can be moved by the animation player.
+gold bag to a static body. Then maybe it can be moved by the animation player. (See current solution
+:ref:`here<pick_up_animation>.`
+
+.. _pick_up_animation:
+
+the method that seems to work best so far is to start the ``be_picked_up`` animation in StNick.gd and immediately
+yield until the ``gold_bag.gold_bag_animations`` "animation_finished" signal is sent. Then the gold bag is reinitialized
+to be in St. Nick's hand. The ``be_picked_up`` animation calls the gold bag's ``pick_up_motion`` which sets the
+direction and impulse at the time the sprite texture changes. Here is the code:
+
+**StNick.gd**::
+
+    func pick_up_gold_bag():
+        for gold_bag in get_tree().get_nodes_in_group("GoldBag"):
+            if gold_bag.tossed and gold_bag.in_reach and not gold_bag.received:
+                gold_bag.be_picked_up(hand_position.global_position)
+                yield(gold_bag.gold_bag_animations, "animation_finished") # This isn't working!!!
+                held_gold_bag = gold_bag
+                st_nick_follower.remote_path = held_gold_bag.get_path()
+                gold_bag.tossed = false
+                gold_bag.in_reach = false
+                break
+
+**GoldBag.gd**::
+
+    func pick_up_motion(hand_position: Vector2):
+        var start_position = global_position
+        direction = start_position.direction_to(hand_position).normalized()
+        impulse = 10
+        mode = MODE_RIGID
+
+Things to look at:
+
+https://kidscancode.org/godot_recipes/physics/godot3_kyn_rigidbody1/
+
+https://godotlearn.com/godot-3-1-how-to-move-objects/
