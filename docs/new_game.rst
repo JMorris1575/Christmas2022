@@ -55,6 +55,7 @@ Here is a table of contents:
 #. :ref:`first_steps`
 #. :ref:`gold_bags`
 #. :ref:`environment`
+#. :ref:`hud`
 
 .. _initial_ideas:
 
@@ -1118,10 +1119,19 @@ gold bag to a static body. Then maybe it can be moved by the animation player. (
 
 .. _pick_up_animation:
 
-the method that seems to work best so far is to start the ``be_picked_up`` animation in StNick.gd and immediately
-yield until the ``gold_bag.gold_bag_animations`` "animation_finished" signal is sent. Then the gold bag is reinitialized
-to be in St. Nick's hand. The ``be_picked_up`` animation calls the gold bag's ``pick_up_motion`` which sets the
-direction and impulse at the time the sprite texture changes. Here is the code:
+The method that finally worked is to
+
+#. Call the gold bag's ``be_picked_up`` method and immediately yield until the ``gold_bag.gold_bag_animations``
+   "animation_finished" signal is sent. This calls gold bag's ``_on_GoldBagAnimations_animation_finished`` method.
+#. Connect the ``held_gold_bag`` to St. Nick's hand by setting the ``remote_path`` of ``st_nick_follower``. Note:
+   ``held_gold_bag`` is a property of the ``StNick`` character that persists during game play.
+#. Reset the properties of the gold bag to untossed and not in reach.
+#. The gold bag's ``be_picked_up`` method starts the gold bag's ``back_to_hand`` animation after storing the
+   ``hand_position`` parameter for the ``pick_up_motion``.
+#. The animation calls ``pick_up_motion`` which calculates and sets the ``pick_up_velocity`` which will is used to set
+   the ``linear_velocity`` of the gold bag in the ``_integrate_forces`` method.
+
+Here is the code:
 
 **StNick.gd**::
 
@@ -1129,7 +1139,7 @@ direction and impulse at the time the sprite texture changes. Here is the code:
         for gold_bag in get_tree().get_nodes_in_group("GoldBag"):
             if gold_bag.tossed and gold_bag.in_reach and not gold_bag.received:
                 gold_bag.be_picked_up(hand_position.global_position)
-                yield(gold_bag.gold_bag_animations, "animation_finished") # This isn't working!!!
+                yield(gold_bag.gold_bag_animations, "animation_finished")
                 held_gold_bag = gold_bag
                 st_nick_follower.remote_path = held_gold_bag.get_path()
                 gold_bag.tossed = false
@@ -1138,14 +1148,57 @@ direction and impulse at the time the sprite texture changes. Here is the code:
 
 **GoldBag.gd**::
 
-    func pick_up_motion(hand_position: Vector2):
-        var start_position = global_position
-        direction = start_position.direction_to(hand_position).normalized()
-        impulse = 10
-        mode = MODE_RIGID
+    func _integrate_forces(state: Physics2DDirectBodyState):
 
-Things to look at:
+        match action:
+            actions.CHANGE_POS:
+                var new_transform = state.get_transform()
+                new_transform.origin = new_position
+                state.set_transform(new_transform)
+                change_position = false
+            actions.PICK_UP:
+                linear_velocity = pickup_velocity * direction
+            actions.POCKET:
+                linear_velocity = pocket_velocity * direction
+
+        action = null
+
+    (...)
+
+    func be_picked_up(hand_position: Vector2):
+        var anim: Animation = gold_bag_animations.get_animation("back_to_hand")
+        var track_id: int = anim.find_track(".")
+        var key_id: int = anim.track_find_key(track_id, 0.35)
+        anim.track_set_key_value(track_id, key_id, {"args":[hand_position], "method":"pick_up_motion"})
+        gold_bag_animations.play("back_to_hand")
+
+
+    func pick_up_motion(hand_position: Vector2):
+        direction = global_position.direction_to(hand_position).normalized()
+        pickup_velocity = ((hand_position - global_position).length()) * 13 # multiplier found by experiment
+        action = actions.PICK_UP
+        mode = MODE_RIGID # trigger the _integrate_forces method
+
+The technique for animating the ``be_pocketed`` action is very similar to the above although, like the ``throw`` method,
+the ``pocket_gold_bag`` method had to disconnect the ``st_nick_follower.remote_path()`` by setting it to "".
+
+Things to look at for background information:
 
 https://kidscancode.org/godot_recipes/physics/godot3_kyn_rigidbody1/
 
 https://godotlearn.com/godot-3-1-how-to-move-objects/
+
+
+.. _hud:
+
+Heads Up Display
+================
+
+Perhaps this is only the influence of the "Hoppy Days" tutorial from "Discovering Godot" but I think I want to put the
+heads up display (hud) at the top of the gamescreen. Here are the steps to completion as I envision them now:
+
+#. Select a graphic to use for the banner.
+#. Display the banner at the top of the screen.
+#. Decide what should be displayed on the banner.
+#. Implement each of them one by one.
+
