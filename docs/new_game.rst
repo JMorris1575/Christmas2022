@@ -1202,3 +1202,26 @@ heads up display (hud) at the top of the gamescreen. Here are the steps to compl
 #. Decide what should be displayed on the banner.
 #. Implement each of them one by one.
 
+I used a black and white set of banner pieces from https://opengameart.org to create a decent looking banner for the top
+of the screen and then found a way to display it. I added a couple of graphics and labels as in the Udemy course but,
+when it came to hooking them up, I had some choices to make.
+
+Following the Udemy course, presuming I followed it correctly, when I added the GUI to the ``Main`` node it didn't
+display properly. Half was on screen but half flowed off to the right. I ended up putting it under St. Nick's camera,
+which didn't seem like a good place to put it and, it was unnecessary as well. Once I had it structured correctly, with
+the ``CanvasLayer`` on the top with the ``Control`` under that and the design elements and their children under that, it
+worked fine even when I moved it to be a child of the ``Main`` node but I still need to decide where to put the code to
+update the display.
+
+The ``StNick`` node currently keeps the value of ``bags_left`` but the current value of ``smiles`` is in
+``gamestate.gd``. Something tells me that both values, in fact all of the important variables for the game, should be in
+``gamestate.gd`` and have their values changed only there. That way, any change made to those variables can be updated
+through a call to the ``HUD`` from ``gamestate.gd``. Access to ``gamestate.gd`` can come in the ``_ready()`` function of
+the calling scripts with a call to ``get_tree().get_group`` since I put the ``gamestate.gd`` script in the ``Gamestate``
+group.
+
+That worked once I ironed out all the details, changing the call to ``stnick.initialize()`` in main to include a
+reference to ``Gamestate`` and adding a call to ``gamestate.initialize()`` to send a reference to ``HUD``. It seems a
+little awkward that ``StNick`` adjusts the value of ``bags_left`` but ``GoldBagManager`` adjusts the value of
+``smiles``. In some ways it makes sense, the gold bag "knows" when it has hit a target. I'll have to think about it some
+more.
