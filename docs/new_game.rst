@@ -1225,3 +1225,18 @@ reference to ``Gamestate`` and adding a call to ``gamestate.initialize()`` to se
 little awkward that ``StNick`` adjusts the value of ``bags_left`` but ``GoldBagManager`` adjusts the value of
 ``smiles``. In some ways it makes sense, the gold bag "knows" when it has hit a target. I'll have to think about it some
 more.
+
+Debugging Gold Bags and Targets
+===============================
+
+I've noticed some problems with the gold bags. Sometimes I can get double credit for tossing a gold bag. Perhaps this
+happens when I don't throw it far enough into the window that I can't pick it up again. It could be giving me a point
+when I take the gold bag out of the targets collision shape.
+
+In some circumstances I can't pick up a gold bag that I've thrown. Perhaps one of the ones partially tossed through a
+window. Do they have some flag set when they've hit their target?
+
+I will have to systematically investigate these bugs.
+
+
+
