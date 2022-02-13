@@ -1229,14 +1229,43 @@ more.
 Debugging Gold Bags and Targets
 ===============================
 
-I've noticed some problems with the gold bags. Sometimes I can get double credit for tossing a gold bag. Perhaps this
-happens when I don't throw it far enough into the window that I can't pick it up again. It could be giving me a point
-when I take the gold bag out of the targets collision shape.
+I've noticed some problems with the gold bags. Sometimes I can get :ref:`double credit<double_credit>` for tossing a
+gold bag. Perhaps this happens when I don't throw it far enough into the window that I can't pick it up again. It could
+be giving me a point when I take the gold bag out of the targets collision shape.
 
 In some circumstances I can't pick up a gold bag that I've thrown. Perhaps one of the ones partially tossed through a
 window. Do they have some flag set when they've hit their target?
 
 I will have to systematically investigate these bugs.
 
+.. _double_credit:
 
+Fixing Double Credit for Gold Bags Problem
+------------------------------------------
+
+First I need to systematically study when this happens.
+
++-----------------------+-------------------------+---------------------+------------------+-----------------------+
+| **Hand Alignment**    | **Landing Spot**        | **Landing Points?** | **Can Pick Up?** | **Pick Up Points?**   |
++=======================+=========================+=====================+==================+=======================+
+| Inner wall of Bldg.   | Just inside outer edge  | None                | Yes              | None until next throw |
++-----------------------+-------------------------+---------------------+------------------+-----------------------+
+
+That turned out to be enough to start with. This is what I see happening:
+
+#. A gold bag is thrown into a window but not far enough to exit and trigger a score.
+#. St. Nick picks it up and, for some reason yet unknown, the score is not triggered when the gold bag leaves the target
+   area.
+#. St. Nick throws the gold bag and the score is triggered at that time.
+#. When the bag is thown again it cannot be picked up -- probably because the ``received`` flag is set.
+
+I will have to do some print debugging to learn more...
+
+I'm still working on it but what I see so far is that the gold_bag's ``received``flag is somehow being set to true
+during the throw process. It doesn't seem to be set BY the throw process, but just after the yield after the call to run
+the "toss" animation. My guess is that is when the Area2D finally notices that the gold bag exited it's premises some
+time earlier.
+
+So it seems I need to change the way gold bags are detected upon entering a window. I have just changed the collsion
+shapes in the window tiles but haven't yet implemented detections. At the moment, I don't know how.
 
