@@ -1245,6 +1245,9 @@ Fixing Double Credit for Gold Bags Problem
 
 First I need to systematically study when this happens.
 
+The Problem
+^^^^^^^^^^^
+
 +-----------------------+-------------------------+---------------------+------------------+-----------------------+
 | **Hand Alignment**    | **Landing Spot**        | **Landing Points?** | **Can Pick Up?** | **Pick Up Points?**   |
 +=======================+=========================+=====================+==================+=======================+
@@ -1269,3 +1272,39 @@ time earlier.
 So it seems I need to change the way gold bags are detected upon entering a window. I have just changed the collsion
 shapes in the window tiles but haven't yet implemented detections. At the moment, I don't know how.
 
+The Solution
+^^^^^^^^^^^^
+
+It works a lot better when I have the Area2D trigger on ``body_enter`` rather than on ``body_exit`` and adjust its
+``CollisionShape2D`` so that it starts just behind the lighter brown part of the window. This triggers at least very\
+close to the point that the gold bag sits out of St. Nick's reach.
+
+Improving Creation of Target Buildings
+======================================
+
+I am not satisfied with my current method of creating target buildings which is outlined below:
+
+#. First, in the ``Obstacles`` TileMap, I trace out the outline of where the building will be leaving a hole where the
+   window will be as well as several more blank tiles to give the gold bag a place to land. This provides St. Nick and
+   the gold bags something to collide with as if it were a building.
+#. In the ``Targets`` TileMap I trace out the shape of the building one tile at a time, each tile being carefully
+   chosen from the list available, including blank tiles for the interior of the building. This gives the appearance of
+   a building but has no collision shapes for either St. Nick or a gold bag to interact with.
+#. In the ``Targets`` TileMap I add a window at the proper location but that means the ground will show through in the
+   section behind the window. Each window has a collision shape set in the tilemap that keeps St. Nick out but allows
+   gold bags in.
+#. In the ``Buildings`` TileMap I place a black square under the location of the window to prevent the ground from
+   showing through.
+#. In the ``Main`` scene I place an ``Area2D`` in the proper place to detect any gold bags entering through the window
+   but out of St. Nick's reach.
+
+All this is not only a pain, but not particularly intuitive. I have to edit four different scenes to create a target
+building! There must be a better way.
+
+Ideally, I could just draw a target building the normal way, plop a window, with a built-in ``Area2D`` on top of it, and
+everything would work. Perhaps I could do it this way:
+
+#. In the ``Buildings` TileMap draw a building with a "cutout" of two blocks where the window is going to go. This would
+   provide something for St. Nick and
+#. In a scene drawn on a higher level drop the appropriate window, complete with an Area2D and an image carefully
+   designed to cover up the inner walls of the building's "cutout" section.
