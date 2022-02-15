@@ -1305,6 +1305,22 @@ Ideally, I could just draw a target building the normal way, plop a window, with
 everything would work. Perhaps I could do it this way:
 
 #. In the ``Buildings` TileMap draw a building with a "cutout" of two blocks where the window is going to go. This would
-   provide something for St. Nick and
+   provide something for St. Nick and the gold bags to collide with.
 #. In a scene drawn on a higher level drop the appropriate window, complete with an Area2D and an image carefully
    designed to cover up the inner walls of the building's "cutout" section.
+
+I'm working on that now. Here is what I've done:
+
+#. I created a 256 x 256 pixel tileset with GIMP having windows facing in all four directions.
+#. I learned that the "black" color of the building interiors is actually RGB(9, 9, 9).
+#. I learned that the black color needs to reach at least 16 pixels beyond the back of the 128 x 128 cell in order to
+   cover up the part of the building "cutout" directly behind the window.
+#. I created a ``Window.tscn`` with a ``Node2D`` as the parent and two children. One child is the ``TileMap`` for the
+   window, while the other is an ``Area2D`` to detect the gold bag's entrance.
+#. I created a script, ``Window.gd``, with an export variable I can use to set the direction the window faces and which
+   sets the ``TileMap`` to display that window and its associated black spaces.
+
+I have quite a ways to go before this works properly but it seems promising at the moment. I may have to change the
+structure of ``Window.tscn`` Perhaps using the ``TileMap`` as the parent node will help in the placement of the window.
+I am certainly going to have to change the tileset so that it contains images that are just a little bit bigger to cover
+what they need to cover.
