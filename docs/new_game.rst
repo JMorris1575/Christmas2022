@@ -1309,6 +1309,9 @@ everything would work. Perhaps I could do it this way:
 #. In a scene drawn on a higher level drop the appropriate window, complete with an Area2D and an image carefully
    designed to cover up the inner walls of the building's "cutout" section.
 
+First Attempt
+^^^^^^^^^^^^^
+
 I'm working on that now. Here is what I've done:
 
 #. I created a 256 x 256 pixel tileset with GIMP having windows facing in all four directions.
@@ -1324,3 +1327,32 @@ I have quite a ways to go before this works properly but it seems promising at t
 structure of ``Window.tscn`` Perhaps using the ``TileMap`` as the parent node will help in the placement of the window.
 I am certainly going to have to change the tileset so that it contains images that are just a little bit bigger to cover
 what they need to cover.
+
+Second Attempt
+^^^^^^^^^^^^^^
+
+Having learned from that I thought, in the middle of the night of course, that I could accomplish it better with the
+following steps:
+
+#. Create a texture of just one window with its associated black area and ``Area2D``.
+#. Create a new version of ``Window.tscn``, or just modify the existing one, to include a ``Node2D`` as the parent, a
+   ``Sprite`` node and an ``Area2D`` node as its children.
+#. Set the center of rotation for the ``Window.tscn`` to the outside center of the window part of the window sprite.
+   This can be used in the inspector to give the window the proper orientation.
+#. Position the ``Area2D`` to properly detect the gold bags after they have passed out of St. Nick's reach.
+#. I ended up having to add a ``StaticBody2D`` with a rectangular ``CollisionShape2D`` to prevent St. Nick from entering
+   the building. In the inspector, under Collision, I set it as a Target which interacts with the Player only.
+
+This works well and it is fairly easy to set up. There are limitations at the moment. Target areas cannot touch an inner
+convex corner of a building, but I can live with that better than the previous system for sure!
+
+Additional Things to Implement
+==============================
+
+I need to implement "levels" in the game and a means for moving from one level to the next. I think that if the bishop
+gets back to his cathedral after dispensing all of the gifts on a particular level he should move on to the next level.
+Perhaps there needs to be some sort of challenge related to that -- a time limit perhaps.
+
+The levels themselves can be structured like my current ``Main`` scene. I suspect having a ``LevelTemplate`` will be
+helpful too. I think there is something about that in the Heismesters game in the Udemy course.
+
