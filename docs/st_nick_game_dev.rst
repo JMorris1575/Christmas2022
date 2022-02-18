@@ -1354,14 +1354,15 @@ smiling star grow and shrink quickly, maybe rotate back and forth very quickly, 
 :ref:`target_response`.
 
 Perhaps I should have a similar animation to indicate a change in the number of gold bags. (See
-:ref:`gold_bag_response`.
+:ref:`gold_bag_response`).
 
 I need to implement "levels" in the game and a means for moving from one level to the next. I think that if the bishop
 gets back to his cathedral after dispensing all of the gifts on a particular level he should move on to the next level.
 Perhaps there needs to be some sort of challenge related to that -- a time limit perhaps.
 
 The levels themselves can be structured like my current ``Main`` scene. I suspect having a ``LevelTemplate`` will be
-helpful too. I think there is something about that in the Heismesters game in the Udemy course.
+helpful too. I think there is something about that in the HeistMesters game in the Udemy course. (See :ref:`levels`
+below.)
 
 I will also need to create some Non-Player Characters (NPCs) such as thieves and onlookers. They could be part of the
 ``LevelTemplate`` but I suspect not. After all, the initial level at least, and perhaps some other early levels, won't
@@ -1446,3 +1447,48 @@ Obviously this requires the calls to ``display_bags_left`` to indicate the mode.
         elif change < 0:
             mode = hud.modes.SUBTRACT
         hud.display_bags_left(bags_left, mode)
+
+.. _levels:
+
+Managing Levels
+---------------
+
+The Learning Experience
+^^^^^^^^^^^^^^^^^^^^^^^
+
+After playing around trying to move my ``Main`` scene to be a level, and create a ``LevelTemplate`` from it, I discover
+that I don't know much about how to do this. I need to see more examples.
+
+A Google search on "implementing levels in a godot game" yielded the following links, some of which I include here only
+because they may be more useful later:
+
+https://www.youtube.com/watch?v=c2mkyW_TymY "Godot Tutorial: Switching Levels made Easy", 4:53
+
+https://www.youtube.com/watch?v=OSCaqMrxHN8 "Godot Beginner Tutorial 21: Multiple Levels", 5:54
+
+https://www.youtube.com/watch?v=uZTjBYDjGCs "Godot In-Game Level Editor (part 1)", 22:52
+
+https://www.youtube.com/watch?v=fpUchzKtDbQ "6 Tips to Better Organize your Godot Projects", 11:38
+
+Of the four the first one is the best but doesn't cover everything I need. Here is what I think I will want to do:
+
+#. The game should open on a menu scene where the player can select:
+
+   A. Their next level (if any)
+   #. To replay a previous level (which sends them to another menu to choose from previously played levels)
+   #. Complete a tutorial level
+   #. Change the game settings
+   #. Quit the game
+
+#. If they select their next level the program needs to know what their last level was and select the next one.
+#. When each level is selected the game variables for that level should be initialized.
+
+Here is a tentative plan for implementation:
+
+#. Create a menu scene, which is set in the Project Settings as the starting scene, which only has two buttons, one to
+   play the game, one to quit the game.
+#. Create a couple of simple levels which:
+
+   A. take care of their own initialization
+   #. allow St. Nick to move to an area which teleports him to the next level, or back to the menu if there are no more
+      levels.
