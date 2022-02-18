@@ -1,6 +1,6 @@
-#####################
-The St. Nicholas Game
-#####################
+#############################
+St. Nicholas Game Development
+#############################
 
 I'm planning to add a new game to the website for Christmas 2022, a game involving helping St. Nicholas deliver bags of
 gold to poor families. The details of the game design will probably come to me gradually during the year and especially
@@ -1115,7 +1115,7 @@ do during the game. I'll have to think of something better.
 
 The animation for picking up a gold bag from the ground is awful. See if it can be helped by temporarily changing the
 gold bag to a static body. Then maybe it can be moved by the animation player. (See current solution
-:ref:`here<pick_up_animation>.`
+:ref:here`<pick_up_animation>.`
 
 .. _pick_up_animation:
 
@@ -1264,7 +1264,7 @@ That turned out to be enough to start with. This is what I see happening:
 
 I will have to do some print debugging to learn more...
 
-I'm still working on it but what I see so far is that the gold_bag's ``received``flag is somehow being set to true
+I'm still working on it but what I see so far is that the gold_bag's ``received`` flag is somehow being set to true
 during the throw process. It doesn't seem to be set BY the throw process, but just after the yield after the call to run
 the "toss" animation. My guess is that is when the Area2D finally notices that the gold bag exited it's premises some
 time earlier.
@@ -1304,13 +1304,13 @@ building! There must be a better way.
 Ideally, I could just draw a target building the normal way, plop a window, with a built-in ``Area2D`` on top of it, and
 everything would work. Perhaps I could do it this way:
 
-#. In the ``Buildings` TileMap draw a building with a "cutout" of two blocks where the window is going to go. This would
+#. In the ``Buildings`` TileMap draw a building with a "cutout" of two blocks where the window is going to go. This would
    provide something for St. Nick and the gold bags to collide with.
 #. In a scene drawn on a higher level drop the appropriate window, complete with an Area2D and an image carefully
    designed to cover up the inner walls of the building's "cutout" section.
 
 First Attempt
-^^^^^^^^^^^^^
+-------------
 
 I'm working on that now. Here is what I've done:
 
@@ -1329,7 +1329,7 @@ I am certainly going to have to change the tileset so that it contains images th
 what they need to cover.
 
 Second Attempt
-^^^^^^^^^^^^^^
+--------------
 
 Having learned from that I thought, in the middle of the night of course, that I could accomplish it better with the
 following steps:
@@ -1349,6 +1349,13 @@ convex corner of a building, but I can live with that better than the previous s
 Additional Things to Implement
 ==============================
 
+I would like to give some audio-visual response from the GUI when St. Nick hits a target. I'm thinking of having the
+smiling star grow and shrink quickly, maybe rotate back and forth very quickly, and play a happy sound of some sort. See
+:ref:`target_response`.
+
+Perhaps I should have a similar animation to indicate a change in the number of gold bags. (See
+:ref:`gold_bag_response`.
+
 I need to implement "levels" in the game and a means for moving from one level to the next. I think that if the bishop
 gets back to his cathedral after dispensing all of the gifts on a particular level he should move on to the next level.
 Perhaps there needs to be some sort of challenge related to that -- a time limit perhaps.
@@ -1356,3 +1363,86 @@ Perhaps there needs to be some sort of challenge related to that -- a time limit
 The levels themselves can be structured like my current ``Main`` scene. I suspect having a ``LevelTemplate`` will be
 helpful too. I think there is something about that in the Heismesters game in the Udemy course.
 
+I will also need to create some Non-Player Characters (NPCs) such as thieves and onlookers. They could be part of the
+``LevelTemplate`` but I suspect not. After all, the initial level at least, and perhaps some other early levels, won't
+have any NPCs. Like gold bags, they can be added on an as-needed basis.
+
+
+.. _target_response:
+
+Target Response
+---------------
+
+This shouldn't be too difficult to do. Here is what I think I need to do:
+
+#. Add an ``AnimationPlayer`` to the HUD.
+#. Add some property tracks to handle the enlargement, rotation and possibly brightening.
+#. Locate a happy sound to play.
+#. Add an ``AudioStreamPlayer`` to play the happy sound and add an animation track to access it.
+#. Add a line to play the "score" animation to the ``update_smiles`` function in ``HUD.gd``.
+
+.. _gold_bag_response:
+
+Gold Bag Response
+-----------------
+
+I think it might look nice to have a set of gold bags visible representing how many are in St. Nick's pocket. I may or
+may not also have a label giving the number. As each gold bag disappears from the pocket it can shrink to nothing and
+make some sort of sound. Something similar could happen when a gold bag re-enters the pocket.
+
+As I think about implementing this I also think that I may want to limit the number of gold bags that can be in St.
+Nick's pocket, maybe 3, maybe 5, and he would have to return home to get more if he runs out before delivering them all.
+This adds an extra element to the game and would also make it easier to implement this stack of gold bags I have in
+mind.
+
+I was thinking of trying to keep them vertically centered in their part of the HUD but it might be better, and easier,
+to stack them from top to bottom and remove them from bottom to top. The animation player would still have to get which
+image to manipulate but I think I've learned how to do that now.
+
+Here are the steps I think I need to follow:
+
+#. Restructure the HUD so that the stack of gold bags can be displayed to the left of the banner and to the left of the
+   label that displays the count (if it is still desired).
+#. Create an ``add_to_gold_bag_display`` method to display each new gold bag as it appears.
+#. Call that routine repeatedly at the beginning of the game to stock St. Nick's pockets.
+#. Create a ``remove_from_gold_bag_display`` method to remove the gold bag at the bottom of the stack.
+
+It turned out to be a little different than that. I created a new scene called ``GoldBagMarker.tscn`` which is
+structured as follows::
+
+    GoldBagMarker (Node2D)
+        GoldBagSprite (Sprite)
+        AnimationPlayer (AnimationPlayer)
+        AppearSound (AudioStreamPlayer)
+        DisappearSound (AudioStreamPlayer)
+
+The code in ``HUD.gd`` that operates this is as follows::
+
+    func display_bags_left(bags_left: int, mode: int):
+        gold_bag_label.text = str(bags_left)
+        var displacements = image_displacements[bags_left]
+        var center = Vector2(gold_bag_display_size.x/2, gold_bag_display_size.y/2)
+        if mode == modes.SUBTRACT:
+            image_array[bags_left].get_node("AnimationPlayer").play("disappear")
+            yield(image_array[bags_left].get_node("AnimationPlayer"), "animation_finished")
+        for image in image_array:
+            image.visible = false
+        for index in range(bags_left):
+            var displacement = displacements[index]
+            image_array[index].position = Vector2(center.x + displacement, center.y + displacement)
+            image_array[index].visible = true
+            if index == bags_left - 1:
+                if mode == modes.ADD:
+                    image_array[index].get_node("AnimationPlayer").play("appear")
+
+Obviously this requires the calls to ``display_bags_left`` to indicate the mode. Here is how that is done in
+``Gamestate.gd``::
+
+    func update_bags_left(change: int):
+        var mode = hud.modes.NONE
+        bags_left += change
+        if change > 0:
+            mode = hud.modes.ADD
+        elif change < 0:
+            mode = hud.modes.SUBTRACT
+        hud.display_bags_left(bags_left, mode)

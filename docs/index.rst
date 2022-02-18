@@ -12,7 +12,8 @@ Welcome to Christmas 2022's documentation!
 
    start.rst
    updates.rst
-   new_game.rst
+   st_nick_game_design.rst
+   st_nick_game_dev.rst
    concentration.rst
 
 
