@@ -1492,3 +1492,46 @@ Here is a tentative plan for implementation:
    A. take care of their own initialization
    #. allow St. Nick to move to an area which teleports him to the next level, or back to the menu if there are no more
       levels.
+
+The first item on that list is covered very nicely here:
+https://www.udemy.com/course/draft/1647296/learn/lecture/19778092#overview and shouldn't be too hard to do. I do,
+however, want a different look and feel to my version. I'm thinking of an image of St. Nicholas with the name of the
+game "St. Nicholas Adventure" at the top. It would be nice if I could find one of him in action but that's probably not
+very likely.
+
+.. note::
+
+    Interesting: the wikipedia article mentions that St. Nicholas is the patron saint of repentant thieves. Maybe I can
+    work that into the game somehow. See https://en.wikipedia.org/wiki/Saint_Nicholas.
+
+While working on the second item I discovered a few things:
+
+#. Once can create a new level by clicking Scene-->New Inherited Scene then selecting ``LevelTemplate.tscn`` as the
+   scene to inherit from. This scene can be edited and remain independent of the others and the original. It uses the
+   same script, I think, but using export variables allows me to set such things as the number of gold bags available
+   for each level.
+#. Using a plain ``Node`` instead of a ``Node2D`` as an organizing device in the node tree disturbs the way the items
+   within it are drawn. They seem to come out on top or disappear in the game. I discovered this with the ``Window``
+   scene. Windows were hiding gold bags that got tossed through them.
+
+Once I actually had a Level02.tscn the teleporting pad I made out of an ``Area2D``, a ``CollsionShape2D`` and a
+``TextureRect`` to make it visible worked quite well. I notice that, if there is no Level of the new name the game fails
+silently. I will have to divise some kind of a test to get back to the main menu if there are no more levels of the
+given name.
+
+More Things To Do
+^^^^^^^^^^^^^^^^^
+
+Here are some more things I still need to do:
+
+#. Invent a better way to make the ``TransferArea`` visible. The Heist Miesters tutorial might have something for me on
+   this.
+#. Think of a way that one can determine whether the requirements have been met for being transported -- requirements
+   that may differ from level to level. Again, I will need to study the Heist Mesiters tutorial.
+#. Create some Non Player Characters (NPCs) that could include:
+
+   A. Regular thieves -- who follow a random path
+   #. Smarter thieves -- who know when a gold bag is visible
+   #. Very smart thieves -- who know when St. Nick has a gold bag in his hand and do a much better job tracking him
+   #. Townspeople -- if they are looking St. Nick can't throw gold bags into windows.
+   #. A policeman -- who prevents theives from attacking but also prevents St. Nick from throwing a bag
