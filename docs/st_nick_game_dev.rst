@@ -1525,14 +1525,55 @@ More Things To Do
 Here are some more things I still need to do:
 
 #. Invent a better way to make the ``TransferArea`` visible. The Heist Miesters tutorial might have something for me on
-   this.
+   this. See :ref:`transfer_areas`
 #. Think of a way that one can determine whether the requirements have been met for being transported -- requirements
    that may differ from level to level. Again, I will need to study the Heist Mesiters tutorial.
 #. Make the buttons in the main menu look better -- perhaps learn how to use themes in Godot
-#. Create some Non Player Characters (NPCs) that could include:
+#. Create some Non Player Characters (NPCs) that could include: (See :ref:`npcs`)
 
    A. Regular thieves -- who follow a random path
    #. Smarter thieves -- who know when a gold bag is visible
    #. Very smart thieves -- who know when St. Nick has a gold bag in his hand and do a much better job tracking him
    #. Townspeople -- if they are looking St. Nick can't throw gold bags into windows.
    #. A policeman -- who prevents theives from attacking but also prevents St. Nick from throwing a bag
+
+.. _transfer_areas:
+
+Transfer Areas
+""""""""""""""
+
+The Heist Miesters videos did help with this. I made a new scene that is inherited by the ``LevelTemplate``. Since the
+visibility is determined by a ``ColorRect`` with a partially transparent color, I can make the ``Area2D`` that actually
+detects the collisions smaller and center it in the transfer area, which I'm calling an ``Exit`` by the way. This will
+make it so that St. Nick actually enters the transfer area before something happens rather than just touching the edge.
+
+When it comes to determining whether requirements have been met, it may be better to do that in the ``Main.gd`` script
+or the ``StNick.gd`` script rather than in the ``Exit.gd`` script because more information is readily available there.
+Perhaps the ``Exit`` scene should send a signal up out to indicate when St. Nick has entered and the receiving script
+can decide what to do. Alternately, once all requirements for a level are fulfilled, either ``Main`` or ``StNick`` can
+set a ``requirements_met`` variable in ``Exit.gd``.
+
+This all depends on having a good way to determine whether the requirements are actually met. I think I need to think
+through the kinds of things that might be requirements for various levels:
+
+#. A gold bag successfully delivered to each potential recipient.
+#. St. Nick possessing an object when leaving one level that will be needed on a higher level? (It might be better to
+   make him go back.)
+#. A thief repenting when forgiven by St. Nick. (Could also be bonus points rather than a requirement.)
+#. St. Nick completing his tasks within a time limit.
+#. others?
+
+I think, to start, I should just concern myself with making sure each target area gets a gold bag. If I add a
+``received_gold_bag`` variable to the target area (``Widnow``) I won't have to use another export variable, just devise
+a way to check that the requirement is met.
+
+That turns out to work very well. I had to use ``for window in windows.get_children()`` instead of just
+``for window in windows`` but that didn't hold me back very much.
+
+I did learn how to make the buttons look better using Godot's Themes, but I think I need a whole new section for
+creating Non-Player Characters.
+
+.. _npcs:
+
+Non-Player Characters
+=====================
