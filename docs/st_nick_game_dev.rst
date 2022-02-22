@@ -1528,6 +1528,7 @@ Here are some more things I still need to do:
    this.
 #. Think of a way that one can determine whether the requirements have been met for being transported -- requirements
    that may differ from level to level. Again, I will need to study the Heist Mesiters tutorial.
+#. Make the buttons in the main menu look better -- perhaps learn how to use themes in Godot
 #. Create some Non Player Characters (NPCs) that could include:
 
    A. Regular thieves -- who follow a random path
