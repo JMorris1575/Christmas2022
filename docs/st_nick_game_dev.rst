@@ -1577,3 +1577,21 @@ creating Non-Player Characters.
 
 Non-Player Characters
 =====================
+
+This may take some research before I start. I decided to note how Non-Player characters were created both in the
+Heist Meisters tutorial and in the Jmbiv tutorial. Here are my notes while watching each one:
+
+**Heist Meisters**
+
+#. The pertinent videos seem to be numbers 43, 44, 51, 52, and 53.
+#. Number 43, "Making a Character Template Scene" speaks of making an inheritable scene to:
+   A. Avoid repeating code and values
+   #. Improve consistency
+   #. Make adding variations easy
+#. He bases the character template on a ``KinematicBody2D``
+#. His character template has only three constants: SPEED, MAX_SPEED and FRICTION
+#. Number 44, "The Player Character" shows how to inherit his character template.
+#. He uses a different approach to controlling the movement of the character than jmbiv
+#. Number 51, "Adding Guards" doesn't start discussing guards until just before 5:40.
+#. His guards inherit from something called "Detection Scene" which he probably created for the cameras.
+
