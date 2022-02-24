@@ -1621,5 +1621,30 @@ this may be an advantage of using jmbiv's AI ideas.
    instance, like getting the gold bag out of his pocket, tossing it, picking it up and putting it in his pocket are
    are St. Nick's actions but, since they involve gold bags, affect the data of a gold bag. To me, for now anyway, that
    muddies the waters as to which functionality to put where. This discussion starts at about 12:30.
+#. Part 8: "Enemy AI and Shooting" adds an Artificial Intelligence (``AI``) node to the ``Enemy``.
+#. Putting townspeople, thieves, pickpockets etc. into groups will probably be useful for detecting which is which.
+#. Dependency injection is something he uses to communicate between nodes at the same level of the tree. He starts
+   explaining this at 10:30.
+#. He shows how to get a global script to autoload toward the end of the video. He starts discussion on this in
+   connection with the firing of bullets, around 20:00.
+
+
+Thoughts:
+
+#. Using an AI node allows different AIs for different characters. I think I will need that.
+#. Dumb thieves can just wander around and only approach St. Nick if he is in sight nearby. If he steps out of view they
+   forget about him an go back to wandering.
+#. Smarter thieves can give chase to St. Nick always able to follow him around at least one corner and then go back to
+   wandering.
+#. The smartest thieves can "smell" gold bags when St. Nick brings them out of his pocket and approach him from wherever
+   they are.
+#. Perhaps some thieves will only engage St. Nick if they see him carrying a gold bag.
+#. Pickpockets like to bump into people. If one bumps into St. Nick he takes a gold bag.
+#. I am going to have to learn how the guard flashlights word in Heist Meisters to be able to apply it to thieves
+   being able to see gold bags.
+
+
+
+
 
 
