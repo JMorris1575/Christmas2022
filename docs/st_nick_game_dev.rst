@@ -1587,7 +1587,7 @@ Heist Meisters tutorial and in the Jmbiv tutorial. Here are my notes while watch
 Heist Meisters
 ^^^^^^^^^^^^^^
 
-#. The pertinent videos seem to be numbers 43, 44, 51, 52, and 53.
+#. The pertinent videos seem to be numbers 43, 44, 49, 50, 51, 52, and 53.
 #. Number 43, "Making a Character Template Scene" speaks of making an inheritable scene to:
    A. Avoid repeating code and values
    #. Improve consistency
@@ -1598,6 +1598,7 @@ Heist Meisters
    its script, then creates a new script making sure to inherit not from ``KinematicBody2D``, but from his
    ``TemplateCharacter`` scene.
 #. He uses a different approach to controlling the movement of the character than jmbiv
+#. Lessons 49 and 50 detail the method he used to determine whether the player could be seen or not.
 #. Number 51, "Adding Guards" doesn't start discussing guards until just before 5:40.
 #. His guards, because of their flashlights I think, inherit from something called "Detection Scene" which he probably
    created for the cameras.
