@@ -1593,5 +1593,33 @@ Heist Meisters tutorial and in the Jmbiv tutorial. Here are my notes while watch
 #. Number 44, "The Player Character" shows how to inherit his character template.
 #. He uses a different approach to controlling the movement of the character than jmbiv
 #. Number 51, "Adding Guards" doesn't start discussing guards until just before 5:40.
-#. His guards inherit from something called "Detection Scene" which he probably created for the cameras.
+#. His guards, because of their flashlights I think, inherit from something called "Detection Scene" which he probably
+   created for the cameras.
+#. Number 52, "Moving Guards 1: Navigation Options" speaks of two possible ways of handling the navigation and then
+   settles on the same one jmbiv uses. He also speaks of a bug in Godot, at least the version he was using, that I may
+   have to contend with. It's discussed around 6:30.
+#. Number 53, "Moving Guards 2: get_simple_path()" explains a different method of getting links to various nodes in the
+   tree: ``get_tree().get_root().find_node(...)``. Check around 3:30 for this.
+#. Number 53 is where he shows his method of finding the paths for his guards.
+
+Thoughts: I like the idea of creating an inheritable ``NPCTemplate`` scene. It could contain the kinds of constants he
+used but also a variable for type of character, such as thief, smart_thief, townsperson, pickpocket, animal, etc. I
+still want to be able to use different pathfinding techniques for different characters, even those of the same type.
+this may be an advantage of using jmbiv's AI ideas.
+
+**Topdown Shooter**
+
+#. The pertinent ideas seem to be in parts 6, 7, 8, 9 and 10.
+#. Part 6: "Making an Enemy" does that by duplicating the player node, using the right-click menu choices to make it
+   local, then making it it's own scene. Then he killed the whole player script that got copied along with it. I think
+   I'd rather start writing my NPCs from scratch, all inheriting from the same ``NPCTemplate``.
+#. Part 7: "Refactoring and Node Composition" might have some useful information in its Node Composition section. This
+   starts around 4:15.
+#. In discussing the node composition of the ``Weapon`` node he makes the point that the player really doesn't need to
+   know about the weapon stuff and that its functionality should be moved to the ``weapon.gd`` script. I suspect that
+   something like that is true for what I'm doing with gold bags but I'm not sure how to work it. The actions, for
+   instance, like getting the gold bag out of his pocket, tossing it, picking it up and putting it in his pocket are
+   are St. Nick's actions but, since they involve gold bags, affect the data of a gold bag. To me, for now anyway, that
+   muddies the waters as to which functionality to put where. This discussion starts at about 12:30.
+
 
