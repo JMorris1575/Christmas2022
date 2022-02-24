@@ -1594,7 +1594,9 @@ Heist Meisters
    #. Make adding variations easy
 #. He bases the character template on a ``KinematicBody2D``
 #. His character template has only three constants: SPEED, MAX_SPEED and FRICTION
-#. Number 44, "The Player Character" shows how to inherit his character template.
+#. Number 44, "The Player Character" shows how to inherit his character template. He instances a child scene, deletes
+   its script, then creates a new script making sure to inherit not from ``KinematicBody2D``, but from his
+   ``TemplateCharacter`` scene.
 #. He uses a different approach to controlling the movement of the character than jmbiv
 #. Number 51, "Adding Guards" doesn't start discussing guards until just before 5:40.
 #. His guards, because of their flashlights I think, inherit from something called "Detection Scene" which he probably
@@ -1671,6 +1673,26 @@ they add to the game.
 |               | apologize and get closer to St. Nick than a    | and target him if they see him with a gold bag.     |
 |               | regular resident.                              |                                                     |
 +---------------+------------------------------------------------+-----------------------------------------------------+
+
+The NPCTemplate Scene
+^^^^^^^^^^^^^^^^^^^^^
+
+It seems that each ``NPC`` will need to be ``KinematicBody`` with a ``Sprite``, a ``CollisionShape2D``, and a script to
+provide for its actions. The base script needs, at least, to have a speed. Should it also have a means of moving the
+``NPC`` or is that better saved for the individual instances, I don't yet know, but I think I have enough to go on to
+create an ``NPCTemplate`` scene.
+
+I created an ``NPCTemplate`` scene, added a ``Sprite``, a ``CollisionShape2D`` and a script and created a new ``Node2D``
+section in ``LevelTemplate`` called ``NPCs`` to hold the non-player characters. I deleted the pre-existing script and
+replaced it with one inheriting from ``NPCTemplate``. In ``Level01.tscn`` I created a child instance under ``NPCs``,
+with a Resident. I tested the game and it worked. St. Nick could not go through the resident even though I had set
+no collision masks.
+
+Getting the Resident to Move
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+
 
 
 
