@@ -1578,10 +1578,14 @@ creating Non-Player Characters.
 Non-Player Characters
 =====================
 
+Initial Research
+----------------
+
 This may take some research before I start. I decided to note how Non-Player characters were created both in the
 Heist Meisters tutorial and in the Jmbiv tutorial. Here are my notes while watching each one:
 
-**Heist Meisters**
+Heist Meisters
+^^^^^^^^^^^^^^
 
 #. The pertinent videos seem to be numbers 43, 44, 51, 52, and 53.
 #. Number 43, "Making a Character Template Scene" speaks of making an inheritable scene to:
@@ -1607,7 +1611,8 @@ used but also a variable for type of character, such as thief, smart_thief, town
 still want to be able to use different pathfinding techniques for different characters, even those of the same type.
 this may be an advantage of using jmbiv's AI ideas.
 
-**Topdown Shooter**
+Topdown Shooter
+^^^^^^^^^^^^^^^
 
 #. The pertinent ideas seem to be in parts 6, 7, 8, 9 and 10.
 #. Part 6: "Making an Enemy" does that by duplicating the player node, using the right-click menu choices to make it
@@ -1627,6 +1632,9 @@ this may be an advantage of using jmbiv's AI ideas.
    explaining this at 10:30.
 #. He shows how to get a global script to autoload toward the end of the video. He starts discussion on this in
    connection with the firing of bullets, around 20:00.
+#. In part 9: "Enemy Patrol State," he uses a timer to simulate the look of patrolling and waiting, patrolling and
+   waiting. I'm not sure I'll need a timer for that, I think I want my ``NPC``s to wander randomly through the city or
+   have a specified location to go to before they disappear -- simulating them going home from something.
 
 
 Thoughts:
@@ -1642,6 +1650,28 @@ Thoughts:
 #. Pickpockets like to bump into people. If one bumps into St. Nick he takes a gold bag.
 #. I am going to have to learn how the guard flashlights word in Heist Meisters to be able to apply it to thieves
    being able to see gold bags.
+#. I will have to carefully study Godot's method of navigating.
+
+Creating NPCs
+-------------
+
+I think I should probably create the simplest kind of ``NPC`` first, the townsperson (or "resident" to keep the name
+shorter) and then build up from there. The table below shows various types of ``NPC``s their characteristics and what
+they add to the game.
+
++---------------+------------------------------------------------+-----------------------------------------------------+
+| **Character** | **Characteristics**                            | **Effect in Game**                                  |
++===============+================================================+=====================================================+
+| Resident      | Walks randomly around the city                 | Blocks St. Nick's passage through narrow streets and|
+|               |                                                | may prevent him from throwing a gold bag if they can|
+|               |                                                | see him.                                            |
++---------------+------------------------------------------------+-----------------------------------------------------+
+| Pickpocket    | A resident who steals a gold bag if he or she  | All the effects of a resident plus they will steal  |
+|               | runs into St. Nick. Perhaps a pickpocket can   | gold bags from him if they accidentally run into him|
+|               | apologize and get closer to St. Nick than a    | and target him if they see him with a gold bag.     |
+|               | regular resident.                              |                                                     |
++---------------+------------------------------------------------+-----------------------------------------------------+
+
 
 
 
