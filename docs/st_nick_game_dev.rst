@@ -1675,6 +1675,8 @@ they add to the game.
 |               | regular resident.                              |                                                     |
 +---------------+------------------------------------------------+-----------------------------------------------------+
 
+I ceated an ``Node2D`` called ``NPCs`` as a child of the ``LevelTemplate`` as a child of the ``LevelTemplate``.
+
 The NPCTemplate Scene
 ^^^^^^^^^^^^^^^^^^^^^
 
@@ -1689,8 +1691,32 @@ replaced it with one inheriting from ``NPCTemplate``. In ``Level01.tscn`` I crea
 with a Resident. I tested the game and it worked. St. Nick could not go through the resident even though I had set
 no collision masks.
 
+A Resident
+^^^^^^^^^^
+
+The easiest thing to add is a resident who just wanders aimlessly around the scene. I will create that first.
+
+Making a Resident
+"""""""""""""""""
+
+I used the ``Scene`` menu to create a ``New Inherited Scene`` from the ``NPCTemplate`` and called it ``Resident``. I
+deleted the script, a copy of ``NPCTemplate.gd`` and replaced it from one that inherited from
+``res://actors/NPCTemplate.gd``. This is all saved in ``Resident.tscn``.
+
 Getting the Resident to Move
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+""""""""""""""""""""""""""""
+
+I think I will want to have AIs moving all the NPCs as jmbiv did in his TopDown Shooter tutorial but, just to get one
+moving I will add something to ``Resident.gd`` and see how it works.
+
+To do this I ended up needing:
+
+#. to learn how to generate random integers from -1 to 1 for both the x and y directions
+#. to change the motion at appropriate intervals
+#. to allow St. Nick to trigger the exit but not the resident
+
+What I have now is working but it's not good. The resident gets stuck far too often and often stays stuck for a long
+time.
 
 
 
