@@ -1718,7 +1718,15 @@ To do this I ended up needing:
 What I have now is working but it's not good. The resident gets stuck far too often and often stays stuck for a long
 time.
 
+Getting the Resident to Move with Pathfinding
+"""""""""""""""""""""""""""""""""""""""""""""
 
+The Topdown Shooter tutorial, parts 20 and 21, pretty much explain how to do this with Godot's ``Astar2D`` node. It also
+interacts with his ``AI`` nodes that are children of each Actor and his ``MapAI`` node that connects somehow with the
+character's ``AI``. I may have to look into this in more detail later. For now, I will just use the character's own
+script.
+
+Error to be fixed: "Can't connect point with id=12 to itself"
 
 
 
