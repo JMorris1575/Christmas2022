@@ -1636,7 +1636,7 @@ Topdown Shooter
 #. He shows how to get a global script to autoload toward the end of the video. He starts discussion on this in
    connection with the firing of bullets, around 20:00.
 #. In part 9: "Enemy Patrol State," he uses a timer to simulate the look of patrolling and waiting, patrolling and
-   waiting. I'm not sure I'll need a timer for that, I think I want my ``NPC``s to wander randomly through the city or
+   waiting. I'm not sure I'll need a timer for that, I think I want my ``NPC``\s to wander randomly through the city or
    have a specified location to go to before they disappear -- simulating them going home from something.
 
 
@@ -1659,20 +1659,34 @@ Creating NPCs
 -------------
 
 I think I should probably create the simplest kind of ``NPC`` first, the townsperson (or "resident" to keep the name
-shorter) and then build up from there. The table below shows various types of ``NPC``s their characteristics and what
+shorter) and then build up from there. The table below shows various types of ``NPC``\s their characteristics and what
 they add to the game.
 
 +---------------+------------------------------------------------+-----------------------------------------------------+
 | **Character** | **Characteristics**                            | **Effect in Game**                                  |
 +===============+================================================+=====================================================+
 | Resident      | Walks randomly around the city                 | Blocks St. Nick's passage through narrow streets and|
-|               |                                                | may prevent him from throwing a gold bag if they can|
+|               |                                                | may prevent him from throwing a gold bag if one can |
 |               |                                                | see him.                                            |
 +---------------+------------------------------------------------+-----------------------------------------------------+
 | Pickpocket    | A resident who steals a gold bag if he or she  | All the effects of a resident plus they will steal  |
 |               | runs into St. Nick. Perhaps a pickpocket can   | gold bags from him if they accidentally run into him|
 |               | apologize and get closer to St. Nick than a    | and target him if they see him with a gold bag.     |
 |               | regular resident.                              |                                                     |
++---------------+------------------------------------------------+-----------------------------------------------------+
+| Thief         | A resident who seeks St. Nick out and          | Thieves target St. Nick if they see him and can     |
+|               | deliberately approach him if close enough.     | "smell" gold bags if St. Nick has one out of his    |
+|               |                                                | pocket and will seek him from afar.                 |
++---------------+------------------------------------------------+-----------------------------------------------------+
+| Horse         | Can block St. Nick's passage unless he gives   | "Horses" can perhaps be different kinds of animals  |
+|               | it a carrot.                                   | each needing a different thing to get them to move. |
++---------------+------------------------------------------------+-----------------------------------------------------+
+| Gopher        | Pops up out of the ground and take gold bags   | This may be random, controlled by a timer, or both  |
+|               | that St. Nick tosses to the ground.            |                                                     |
++---------------+------------------------------------------------+-----------------------------------------------------+
+| Watchman      | If a pickpocket or thief senses one in the     | Watchmen wander and St. Nick may follow one to stay |
+|               | vicinity they will not steal from St. Nick.    | safe, but theives will follow too and the Watchman  |
+|               |                                                | may not be going where St. Nick wants to go.        |
 +---------------+------------------------------------------------+-----------------------------------------------------+
 
 I ceated an ``Node2D`` called ``NPCs`` as a child of the ``LevelTemplate`` as a child of the ``LevelTemplate``.
@@ -1718,20 +1732,43 @@ To do this I ended up needing:
 What I have now is working but it's not good. The resident gets stuck far too often and often stays stuck for a long
 time.
 
-Getting the Resident to Move with Pathfinding
-"""""""""""""""""""""""""""""""""""""""""""""
+Ruminations about Resident Motion
+"""""""""""""""""""""""""""""""""
 
 The Topdown Shooter tutorial, parts 20 and 21, pretty much explain how to do this with Godot's ``Astar2D`` node. It also
 interacts with his ``AI`` nodes that are children of each Actor and his ``MapAI`` node that connects somehow with the
-character's ``AI``. I may have to look into this in more detail later. For now, I will just use the character's own
-script.
+character's ``AI``. I may have to look into this in more detail later. At first, I thought I'd just use the character's
+own script but it makes more sense to implement some kind of ``AI`` script that can be used by all of the ``NPC``\s.
 
-Error to be fixed: "Can't connect point with id=12 to itself"
+I also need to come up with some way for the ``NPC`` to select the endpoint of its path. I was thinking of just
+selecting a random point in the ``astar`` tiles array but that is not available to the ``NPC``\s. I'll have to think
+about that.
 
+It occurs to me that I am reaching the point where my St. Nicholas Adventure game is enough different from his Topdown
+Shooter tutorial that I can no longer simply "copy" what he has done. I am going to have to think through the logic of
+what I need my characters to do.
 
+Yet, following his basic node structure, I think, will still be helpful. He discusses his ``MapAI`` in parts 13 and 14.
+At about 6:25 in part 13 he says::
 
+    So, we have AI that controls individual units, but we're going to need some sort of AI that knows the map and knows
+    the bases and it's going to have to control groups of units and tell them "Hey, this is your next target," and then
+    each unit is responsible for reacting to that target and what's around it on its own but there needs to be some sort
+    of higher-level AI that's directing those units. And I think I'm going to call this MapAI because it is our MapAI
+    that knows where our bases are, where our units need to go... and I think the way I want to set it up is that it is
+    specific to one team, so in our case we have two teams so we'll need two instances of the same, you know, MapAI
+    script running... for each team. So, I'm going to add another (Node2D) and I'm going to call this "AllyMapAI" and
+    I'm going to duplicate this and say "EnemyMapAI."
 
+So it seems his ``MapAI`` directs the ``NPC``\s, while the ``AI`` is something that each ``NPC`` has to react to the
+commands it gets from the ``MapAI``.
 
+How does this apply to my game? I might need to have something that "knows" the map and directs the characters but I may
+have such a diversity of characters that it might make just as much sense to let each of their ``AI``\s "know" the map
+and direct them.
 
+I've also noticed that he distinguishes between types of characters by including a ``Team`` Node2D in each one, either
+``Enemy.tscn`` or ``Ally.tscn`` that does nothing more than define and ``enum`` for the types and export a variable
+where the type can be selected. Does this make sense with the number of ``NPC``\s I might have?
 
-
+I think I will just try to create an ``AI`` in my ``NPC.tscn`` and see where it leads.
