@@ -1771,4 +1771,8 @@ I've also noticed that he distinguishes between types of characters by including
 ``Enemy.tscn`` or ``Ally.tscn`` that does nothing more than define and ``enum`` for the types and export a variable
 where the type can be selected. Does this make sense with the number of ``NPC``\s I might have?
 
-I think I will just try to create an ``AI`` in my ``NPC.tscn`` and see where it leads.
+I decided to try to create an initial ``AI`` in my ``NPC.tscn`` and see where it led me. It worked well enough but,
+because the ``Window``\s are not ``TileMap``\s, they are not eliminated from the places my "Resident" can go. I haven't
+figured out how to fix that yet.
+
+
