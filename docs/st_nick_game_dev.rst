@@ -1775,4 +1775,12 @@ I decided to try to create an initial ``AI`` in my ``NPC.tscn`` and see where it
 because the ``Window``\s are not ``TileMap``\s, they are not eliminated from the places my "Resident" can go. I haven't
 figured out how to fix that yet.
 
+For now I have ended up with everything in Resident.gd and Pathfinding.gd. After creating some different types of
+``NPC``\s I may have a better idea of what is general to the motion or actions of all ``NPC``\s.
 
+The ``Resident``\s can now move but they often get stuck on one another. I think if I use it's built-in
+``CollisionShape2D`` and check for collisions with other ``NPC``\s by putting them in an npc group, then I can reset
+their targets and they should, eventually, disengage.
+
+That didn't work, probably because the body only enters once and if the target is set to the same direction never
+disengages. Can I make them jump back?
