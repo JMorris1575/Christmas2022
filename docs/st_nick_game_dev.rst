@@ -1840,3 +1840,44 @@ to investigate this.
 
 It sure seems like that's what it's doing! I'm trying to figure out how to determine if a body is WITHIN an ``Area2D``
 but, in spite of trying ``Area2D.overlapping_body()`` or something like that, I can't get it to work.
+
+I found these two web pages that explain the algorithm for determining whether a point is within a polygon:
+
+    https://www.geeksforgeeks.org/how-to-check-if-a-given-point-lies-inside-a-polygon/
+
+    and
+
+    https://www.geeksforgeeks.org/check-if-two-given-line-segments-intersect/
+
+but then discovered that Godot already has that functionality. See:
+
+    https://docs.godotengine.org/en/stable/tutorials/math/vectors_advanced.html
+
+    and
+
+    https://docs.godotengine.org/en/stable/classes/class_geometry.html?highlight=geometry
+
+According to that I will need to get a ``PoolVector2Array`` representing the polygon and use something like::
+
+    is_point_in_polygon(Vector2 StNickPosition, PoolVector2Array polygon)
+
+Well, no, that didn't work. The polygon comes back in coordinates local to the ``Resident`` and needs to be transformed
+into global coordinates according to the location and rotation of the ``Resident``. There ought to be a built-in way to
+do this in Godot but I haven't found it yet...
+
+Unless... the ``xform()`` method here is it:
+
+    https://docs.godotengine.org/en/stable/classes/class_transform2d.html#class-transform2d-method-xform
+
+The text says::
+
+    Variant xform ( Variant v )
+
+    Transforms the given Vector2, Rect2, or PoolVector2Array by this transform.
+
+So what I think I need to do is get the ``Resident``'s transform, and use its ``xform`` method to transform the polygon.
+
+That worked, though I had problems at first since the polygon I was using had been transformed and scaled. Once I
+created a new ``CollisionPolygon2D`` under ``VisionZone`` it worked fine. Now I need to clean up the scripts, get rid of
+things I'm not using and decide where to put things I am using. Currently I'm not quite sure what should go into
+``NPCTemplate.gd`` as opposed to ``Resident.gd``.
