@@ -1666,8 +1666,8 @@ they add to the game.
 | **Character** | **Characteristics**                            | **Effect in Game**                                  |
 +===============+================================================+=====================================================+
 | Resident      | Walks randomly around the city                 | Blocks St. Nick's passage through narrow streets and|
-|               |                                                | may prevent him from throwing a gold bag if one can |
-|               |                                                | see him.                                            |
+|               |                                                | prevent him from throwing gold bags if one can see  |
+|               |                                                | him.                                                |
 +---------------+------------------------------------------------+-----------------------------------------------------+
 | Pickpocket    | A resident who steals a gold bag if he or she  | All the effects of a resident plus they will steal  |
 |               | runs into St. Nick. Perhaps a pickpocket can   | gold bags from him if they accidentally run into him|
@@ -1684,12 +1684,13 @@ they add to the game.
 | Gopher        | Pops up out of the ground and take gold bags   | This may be random, controlled by a timer, or both  |
 |               | that St. Nick tosses to the ground.            |                                                     |
 +---------------+------------------------------------------------+-----------------------------------------------------+
-| Watchman      | If a pickpocket or thief senses one in the     | Watchmen wander and St. Nick may follow one to stay |
-|               | vicinity they will not steal from St. Nick.    | safe, but theives will follow too and the Watchman  |
-|               |                                                | may not be going where St. Nick wants to go.        |
+| Watchman or   | If a pickpocket or thief senses one in the     | Watchmen wander between preset point, spending time |
+| Sentry        | vicinity they will not steal from St. Nick.    | at each one, looking around, then moving on. If a   |
+|               |                                                | watchman/sentry can see St. Nick, he can't throw a  |
+|               |                                                | gold bag.                                           |
 +---------------+------------------------------------------------+-----------------------------------------------------+
 
-I ceated an ``Node2D`` called ``NPCs`` as a child of the ``LevelTemplate`` as a child of the ``LevelTemplate``.
+I created an ``Node2D`` called ``NPCs`` as a child of the ``LevelTemplate`` as a child of the ``LevelTemplate``.
 
 The NPCTemplate Scene
 ^^^^^^^^^^^^^^^^^^^^^
@@ -1778,9 +1779,64 @@ figured out how to fix that yet.
 For now I have ended up with everything in Resident.gd and Pathfinding.gd. After creating some different types of
 ``NPC``\s I may have a better idea of what is general to the motion or actions of all ``NPC``\s.
 
+Getting the Residents Unstuck
+"""""""""""""""""""""""""""""
+
 The ``Resident``\s can now move but they often get stuck on one another. I think if I use it's built-in
 ``CollisionShape2D`` and check for collisions with other ``NPC``\s by putting them in an npc group, then I can reset
 their targets and they should, eventually, disengage.
 
 That didn't work, probably because the body only enters once and if the target is set to the same direction never
-disengages. Can I make them jump back?
+disengages. Can I make them jump back? I may have to check the jmbiv tutorial to see what he did, if anything.
+
+I might also try to have ``astar`` avoid other characters in the npc group, updating every frame.
+
+As it turns out, the first method, resetting the targets, works fairly well once the collision masks are set correctly.
+The characters do still get stuck from time to time but if another ``NPC`` bumps into them it usually gets them moving
+again.
+
+I also added a timer, called ``ConversationTimer`` that triggers the resetting of the targets if the ``NPC``\s are still
+in the same place (or close to it) after a set time (currently 30 seconds). Conversations go quickly in this game.
+
+NPCs Viewing St. Nick
+---------------------
+
+I've given the ``NPC``\s an ``Area2D`` to represent their vision. The idea is if St. Nick is in their vision cone he
+cannot toss a gold bag because he would be seen. I will have to figure out how to get buildings and such to block their
+vision so that he can throw the gold bag if they are looking in his direction but from behind a corner for instance.
+Something like this was done in Heist Meisters. I will have to study that.
+
+The necessary information is in segments 49 and 50 of the "Discovering Godot" course. After looking at them both I think
+it will make most sense to use my ``VisionZone`` to detect whether St. Nick is in the field of view and then use the
+line of sight method that he used to determine whether he is also in the line of sight.
+
+If ``StNick`` crosses over into the ``VisionZone`` a variable needs to be set that he is in sight. Then, in
+``_process`` the check can be made if he is also in the line of sight. When StNick exits the ``VisionZone`` the
+``in_FOV`` variable can be reset to false.
+
+There may be a problem with this. What if St. Nick starts out in the sight of one of the ``NPC``\s? He won't be
+entering the ``VisionZone`` so nothing will get triggered -- or will it? Perhaps Godot triggers it automatically when
+the level starts. I'll have to test this.
+
+Here are the steps I envision to complete this:
+
+#. Create the ``player_in_FOV`` variable in the ``Resident.gd`` script.
+#. Detect the ``body_entered`` and ``body_exited`` signals to their respective routines in ``Resident.gd`` and set the
+   appropriate value of ``player_in_FOV``. Hmm... I can't do this since the ``VisionZone`` is part of ``NPCTemplate``
+   rather than ``Resident``. I think I'll have to send signals to set the value of ``player_in_FOV``.
+#. Use ``print()`` debug statements to see if St. Nick's entrances and exits are detected at the appropriate times.
+#. Add a part to ``_process()`` to determine if St. Nick is also in the line of sight (call ``Player_in_LOS()``). If so
+   indicate this with print statements. For this I had to supply a link to the player node by that "injection" technique
+   from jmbiv.
+#. Decide how to indicate that St. Nick can be seen. [I decided to create a variable ``can_see_st_nick`` in
+   ``Resident.gd`` and set it to true or false in the ``_process()`` function.]
+#. Add a method in ``StNick.gd`` to check to see if he can be seen when trying to toss a gold bag and preventing it if
+   he can be seen. (Perhaps with a pop-up message?)
+
+It appears that using the ``body_entered`` signal with the ``body_exited`` signal doesn't work. The ``body_exited``
+signal seems to be emitted when St. Nick completely enters the ``Area2D``, that is, once he crosses entirely into the
+``Area2D`` the ``body_exited`` signal is emitted. Apparently it is set to trigger on the lines, not the spaces. I need
+to investigate this.
+
+It sure seems like that's what it's doing! I'm trying to figure out how to determine if a body is WITHIN an ``Area2D``
+but, in spite of trying ``Area2D.overlapping_body()`` or something like that, I can't get it to work.
