@@ -1881,3 +1881,58 @@ That worked, though I had problems at first since the polygon I was using had be
 created a new ``CollisionPolygon2D`` under ``VisionZone`` it worked fine. Now I need to clean up the scripts, get rid of
 things I'm not using and decide where to put things I am using. Currently I'm not quite sure what should go into
 ``NPCTemplate.gd`` as opposed to ``Resident.gd``.
+
+Studying the Topdown Shooter Tutorial
+-------------------------------------
+
+A study of the jmbiv Topdown Shooter tutorial may be of help if I look carefully at his code.
+
+The first thing I notice is that his ``AllyMapAI`` and ``EnemyMapAI`` are both in his ``Main`` node which more or less
+corresponds with my ``Level`` nodes. Here is a list of things I think I should study:
+
+#. The two ``MapAI`` scripts to see what sorts of things they do and why there is one for both the allies and the
+   enemies.
+#. ``Ally.tscn`` and ``Enemy.tscn`` to see how they are structured and which scripts they use.
+#. ``Enemy.gd``, ``Team.gd`` and ``Player.gd`` to see how they are the same and how they are different and the sorts of
+   things each of them does.
+#. ``AI.gd`` to see how it is connected to the others and to which others it is connected and the sorts of things it
+   does.
+
+AllyMapAI and EnemyMapAI
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+These are really the same script. They are distinguished by the settings of the export variables. The export variables
+are:
+
+#. ``base_capture_start_order`` which gives the choices of FIRST and LAST from an enum.
+#. ``team_name`` which gives the choices in an enum in the Team class which this script somehow knows about.
+#. ``unit`` which takes a drag-and-drop PackedScene -- either Enemy.tscn or Ally.tscn
+#. ``max_units_alive`` which is set to 4 but can perhaps be changed in the inspector.
+
+The ``MapAI`` script is initialized with the capturable bases, the respawn points for its type of unit and the pathfinding script
+by the ``Main`` node's ``_ready()`` function.
+
+Here is a list of its functions:
+
+#. handle_base_captured
+#. check_for_next_capturable_base
+#. get_next_capturable_base
+#. assign_next_capturable_base_to_units
+#. spawn_units
+#. set_unit_ai_to_advance_to_next_base
+#. handle_unit_death
+#. _on_RespawnTimer_timeout
+
+Most of these functions, as might be expected, have to do with issues dealing with the map: the bases and the spawning
+of units on the map. I wasn't sure what ``handle_unit_death`` was doing in there, but I noticed that maybe it is
+misnamed since it really has to do with respawning new units after one has died.
+
+Ally.tscn and Enemy.tscn
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+Enemy, Ally and Player Scripts
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The AI.gd Script
+^^^^^^^^^^^^^^^^
+
