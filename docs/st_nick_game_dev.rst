@@ -1930,9 +1930,32 @@ misnamed since it really has to do with respawning new units after one has died.
 Ally.tscn and Enemy.tscn
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-Enemy, Ally and Player Scripts
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+The main script for both of these is ``actor.gd`` and they both include ``AI`` nodes which connect to the ``AI.gd``
+script. The ``actor.gd`` script:
+
+#. Extends KinematicBody2D since both Allies and Enemies are ``KinematicBody2D``\s.
+#. The AI script is initialized with this actor, his weapon and the team he is on.
+#. Handles smooth rotation toward a given point.
+#. Computes its velocity.
+#. Determines whether the actor has reached the location it is aiming for.
+#. Offers a method to return the team this actor is on, either Neutral, Player or Enemy
+#. Handles bullet hits.
+#. Handles the death of the actor by sending out the "died" signal and removing itself from the queue.
+
+These functions have to do with controlling the character's motion and simple responses to events in the game.
 
 The AI.gd Script
 ^^^^^^^^^^^^^^^^
+
+Is used both by ``Enemy`` and ``Ally`` nodes and extends ``Node2D``. Its functions:
+
+#. Initialize its variables with information from the ``actor.gd`` script.
+#. Handle the ``_physics_process`` for each of the states of the actor: PATROL, ENGAGE and ADVANCE
+#. Set the state to either PATROL, ENGAGE or ADVANCE
+#. Handle the reload of the weapon (should this be in the ``actor.gd`` script?)
+#. Control the PATROL state by computing a new PATROL location after the actor has paused at his previous target.
+#. Control the ENGAGE mode when a body enters or leaves its ``DetectionZone``.
+
+The Player.gd Script
+^^^^^^^^^^^^^^^^^^^^
 
