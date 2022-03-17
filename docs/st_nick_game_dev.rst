@@ -1901,16 +1901,16 @@ corresponds with my ``Level`` nodes. Here is a list of things I think I should s
 AllyMapAI and EnemyMapAI
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-These are really the same script. They are distinguished by the settings of the export variables. The export variables
-are:
+These are really the same script: ``MapAI.gd``. They are distinguished by the settings of the export variables. The
+export variables are:
 
 #. ``base_capture_start_order`` which gives the choices of FIRST and LAST from an enum.
 #. ``team_name`` which gives the choices in an enum in the Team class which this script somehow knows about.
 #. ``unit`` which takes a drag-and-drop PackedScene -- either Enemy.tscn or Ally.tscn
 #. ``max_units_alive`` which is set to 4 but can perhaps be changed in the inspector.
 
-The ``MapAI`` script is initialized with the capturable bases, the respawn points for its type of unit and the pathfinding script
-by the ``Main`` node's ``_ready()`` function.
+The ``MapAI`` script is initialized with the capturable bases, the respawn points for its type of unit and the
+pathfinding script by the ``Main`` node's ``_ready()`` function.
 
 Here is a list of its functions:
 
@@ -1958,4 +1958,17 @@ Is used both by ``Enemy`` and ``Ally`` nodes and extends ``Node2D``. Its functio
 
 The Player.gd Script
 ^^^^^^^^^^^^^^^^^^^^
+
+The ``Player.gd`` script has to deal with keyboard, or touchscreen, input. It also sets the ``CameraTransform`` path so
+that the camera follows the player. Otherwise this script keeps track of the player's health and deals with his death.
+Here are its functions:
+
+#. The ``_ready`` function initializes the weapon.
+#. The ``_physics_process`` function catches keyboard and touchscreen input and uses it to move the player.
+#. The ``_unhandled_input`` function takes care of mouse clicks to fire the weapon and the "R" key to reload.
+#. The ``set_camera_transform`` function does what it says.
+#. The ``reload`` function calls the weapon to reload itself.
+#. The ``get_team`` function reports on which team the player is on. (Player, obviously!)
+#. The ``handle_hit`` function subtracts health points and calls the ``die`` function when it reaches zero.
+#. The ``die`` function emits the "die" signal and removes the player from the queue.
 
