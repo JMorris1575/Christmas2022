@@ -1882,6 +1882,12 @@ created a new ``CollisionPolygon2D`` under ``VisionZone`` it worked fine. Now I 
 things I'm not using and decide where to put things I am using. Currently I'm not quite sure what should go into
 ``NPCTemplate.gd`` as opposed to ``Resident.gd``.
 
+Refactoring Code for the Actors
+===============================
+
+It's time to refactor my code I think. First I study the Topdown Shooter tutorial below and compare it to the current
+form of my code. Then I hope to have a better idea of how to structure my code.
+
 Studying the Topdown Shooter Tutorial
 -------------------------------------
 
@@ -1972,3 +1978,99 @@ Here are its functions:
 #. The ``handle_hit`` function subtracts health points and calls the ``die`` function when it reaches zero.
 #. The ``die`` function emits the "die" signal and removes the player from the queue.
 
+Studying My Code
+----------------
+
+Each level has a ``StNick`` node, with its own code ``StNick.gd`` and ``Node2D`` called ``NPCs`` to contain the various
+denizens of each town. Currently I only have "residents" with their own code ``Resident.gd``. The residents each have an
+``AI`` node, which includes the ``VisionZone`` of each resident and a corresponding ``AI.gd`` script. Finally there is
+an ``NPCTemplate.tscn`` with a corresponding ``NPCTemplate.gd`` script. I think I'll start my study with
+``NPCTemplate.gd``.
+
+The NPCTemplate Script
+^^^^^^^^^^^^^^^^^^^^^^
+
+This script has the ``class_name`` of NPC and extends ``KinematicBody2D``. It enumerates various roles, so far
+``RESIDENT``, ``PICKPOCKET`` and ``THIEF``. It defines the ``reset_target`` signal and sets the character's speed. Here
+are it's functions and what they do:
+
+#. The ``_ready`` function checks to see if the ``VisionZone`` overlaps the player but it uses ``overlaps_body`` which
+   may not work for what I want. This function is intended to set the ``player_in_FOV`` flag if the player starts within
+   the vision zone but I'm not sure it is used any more. After studying the rest of the script, I don't think it is
+   used.
+#. The ``initialize`` function sets links to the ``Pathfinding`` node and the ``StNick`` node in each level. this
+   function also sets the first target for this character.
+#. The ``reset_target`` function sets a new target for this character. There's not much to it but it may be called by
+   other scripts.
+#. The ``get_target`` function returns a random point within the ``pathfinding`` array.
+#. The ``draw_path`` function compiles the points in the character's current path in preparation for drawing lines
+   between them for debugging purposes.
+#. The ``_onCollider_body_entered`` function checks to see if this npc has collided with another npc. If so, it records
+   its position and starts the ``ConversationTimer``. It also emits the ``reset_target`` signal to try to disengage the
+   npcs that collided.
+#. The ``_on_ConversationTimer_timeout`` function checks to see if this character is still within ten pixels of its
+   previous position. If so it tries, again, to disengage by sending the ``reset_target`` signal and starting the
+   conversation timer.
+#. The ``Player_in_FOV`` function uses the characters global transform matrix to determine if the player is in the field
+   of view.
+
+This script seems to contain things that need to be in the ``AI.gd`` script. Perhaps the purpose of this one is only to
+provide a few constants and variables for use by all npcs. Time will tell.
+
+The AI.gd Script
+^^^^^^^^^^^^^^^^
+
+Currently, this script does nothing other than defining the ``VisionZone``. I think much of the ``NPCTemplate.gd``
+script can come here.
+
+The Resident.gd Script
+^^^^^^^^^^^^^^^^^^^^^^
+
+This script extends the ``NPCTemplate.gd`` and thus has its export variable, namely, ``role`` and it's own export
+variable: ``show_paths``. I think both of them should be in the same place. Each resident has a ``Timer`` in addition to
+its ``ConversationTimer`` but I don't see that it serves any purpose.
+
+Currently it has a variable ``movement_direction`` but I don't think that is used either.
+
+Here is the breakdown of what each function does:
+
+#. The ``_ready`` function connects the ``reset_target`` signal to this script's ``reset_target`` function. Then it sets
+   a random texture for this character's sprite.
+#. The ``_process`` function should probably be ``_physics_process``. It displays the path lines if ``show_paths`` is
+   set to ``true``. Then, if the character hasn't already arrived at the end of its path to the target it moves another
+   step in that direction. If it has arrived finds a new target. (This, I believe, is in the ``NPCTemplate.gd`` script.
+   This function also sets a variable ``can_see_st_nick`` if he is in the player's field of view and line of sight.
+#. The ``set_player_in_FOV`` function sets the ``player_in_FOV`` variable to true. I doubt this function is used.
+#. The ``reset_player_in_FOV`` function sets the ``player_in_FOV`` variable to false. I doubt this is used either.
+#. The ``Player_in_LOS`` function returns true if the player is in this character's line of sight.
+
+The StNick.gd Script
+^^^^^^^^^^^^^^^^^^^^
+
+I don't think there will be too many changes here but I could be wrong. Here is the function list:
+
+#. The ``initialize`` function gets links to the gold bag manager, the main node (which I may decide to call the "level
+   node" to be more accurate), and the game state.
+#. The ``_process`` function should probably be ``_physics_process`` and deals with St. Nick's motion and action
+   commands.
+#. The ``_unhandled_input`` function processes the "throw" action. I don't know if this should be up in the
+   ``_physics_process`` or if the other actions: ``grasp_gold_bag``, ``pick_up_gold_bag`` and ``pocket_gold_bag`` need
+   to be here.
+#. The ``grasp_gold_bag`` function includes a comment that it needs a better name. Later on I may want to have a whole
+   inventory system so that St. Nick can choose what to get out of his pocket. This function actually creates a new gold
+   bag, sets the st_nick_follower to its path and updates the gamestate to indicate there is one less bag in his pocket.
+   I suspect much of this will change when I do have an inventory process.
+#. The ``throw`` function has a place that tells St. Nick that he can't throw the gold bag if he can be seen. Currently
+   it's just a print statement. Later I will want to improve that -- maybe an audio message or both audio and a
+   temporary popup box saying "Someone can see you."
+#. The ``seen`` function returns true if any of the npcs can see St. Nick.
+#. The ``pocket_gold_bag`` function reverses the actions of the ``grasp_gold_bag`` function. This one should probably
+   come just after that one.
+#. The ``pick_up_gold_bag`` function picks up a gold bag that has been tossed on the ground. Later it may pick some up
+   from a storehouse St. Nick has someplace.
+#. The ``_on_PickUpArea_body_entered`` function sets a variable in the instance gold bag is the body entering actually
+   is a gold bag.
+#. The ``_on_PickUpArea_body_exited`` sets that same variable to ``false``.
+#. The ``check_requirements`` function returns the results of a call to the main node as to whether its requirements,
+   such as the right number of gold bags getting to the right places, have been met. I don't know why this is here in
+   addition to the level code.
