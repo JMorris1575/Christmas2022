@@ -2086,10 +2086,10 @@ I will try to make a list to help me go from easiest to hardest:
 #. See if you can get rid of the functions that set and reset the ``player_in_FOV`` flag.
 #. See if the ``reset_target`` function is called by other scripts, or if it appears twice.
 #. See if you can change the script ``Main.gd`` to ``Level.gd`` or something to indicate it goes with levels.
+#. Figure out the best place to figure out if a level's requirements have been met.
 #. Rename the ``grasp_gold_bag`` function.
 #. See which items currently in ``NPCTemplate.gd`` could be moved to ``AI.gd``.
 #. See if the actions handled by the ``_unhandled_input`` function in ``StNick.gd`` can be consolidated with the ones in
    the (soon-to-be-renamed) ``_physics_process``.
-#. Figure out the best place to figure out if a level's requirements have been met.
 #. Improve the response of the ``throw`` function in ``StNick.gd`` with audio and/or a pop-up box.
 
