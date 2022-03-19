@@ -2093,3 +2093,27 @@ I will try to make a list to help me go from easiest to hardest:
    the (soon-to-be-renamed) ``_physics_process``.
 #. Improve the response of the ``throw`` function in ``StNick.gd`` with audio and/or a pop-up box.
 
+Some of the things I did, some of them I didn't do. I decided to leave the requirements determination as it is, at least
+for now. Same with the funcions I was thinking of moving to the AI. As I add more characters that may make more sense
+but, for now, I don't think I need to do that. If I do decide to do it I would rather it be after I see a reason for it,
+not just because jmbiv did it. For him it made more sense since his Allies and Enemies exhibited much the same
+behaviors.
+
+I did a lot of changes in connection with changing the name of the ``grasp_gold_bag`` function. I changed it to
+``get_gold_bag`` and changed ``pocket_gold_bag`` to ``replace_gold_bag``. I changed the name of one action and added
+another in the Input section of settings. The end result is that I now have the following actions in connection with
+manipulating the gold bags:
+
++------------------------+---------+
+| **Action**             | **Key** |
++========================+=========+
+| get_gold_bag           |    G    |
++------------------------+---------+
+| replace_gold_bag       |    R    |
++------------------------+---------+
+| pick_up                |    P    |
++------------------------+---------+
+| throw                  |  Space  |
++------------------------+---------+
+
+I still need to update the touchscreen buttons for these actions.
