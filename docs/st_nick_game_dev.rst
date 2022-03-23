@@ -2117,3 +2117,10 @@ manipulating the gold bags:
 +------------------------+---------+
 
 I still need to update the touchscreen buttons for these actions.
+
+Making a Patrolman
+------------------
+
+I used the ``Scene`` menu to create a ``New Inherited Scene`` from the ``NPCTemplate`` and called it ``Patrolman``. I
+deleted the script, a copy of ``NPCTemplate.gd`` and replaced it from one that inherited from
+``res://actors/NPCTemplate.gd``. This is all saved in ``Patrolman.tscn``.
