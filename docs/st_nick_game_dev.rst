@@ -2124,3 +2124,28 @@ Making a Patrolman
 I used the ``Scene`` menu to create a ``New Inherited Scene`` from the ``NPCTemplate`` and called it ``Patrolman``. I
 deleted the script, a copy of ``NPCTemplate.gd`` and replaced it from one that inherited from
 ``res://actors/NPCTemplate.gd``. This is all saved in ``Patrolman.tscn``.
+
+Adding Patrol Points
+^^^^^^^^^^^^^^^^^^^^
+
+My thinking right now is that the points that define the patrolman's territory should not be part of ``Patrolman.tscn``
+because they would move with the patrolman. Then need to be part of the level and then associated with the patrolman
+somehow. The question is how? Should each point be its own scene with an export variable for the patrolman associated
+with it? Should I leave the points in their native form and put them in groups to associate with the various patrolmen?
+I may have to just do something to figure out what is possible.
+
+Getting it to Work
+^^^^^^^^^^^^^^^^^^
+
+In Level00 I added a ``Node2D`` called ``PatrolPoints`` that contained four patrol points. I moved
+``_physics_process()`` to ``NPCTemplate.gd`` as well as some other things. There is a ``get_target()`` function in
+``NPCTemplate.gd`` that can be overridden in the scripts for the various kinds of actors. I kind of like the way that is
+working. The motion of an individual character being controlled by one function.
+
+What I don't like about my current implementation is the klunky way I have to find the patrol points within the
+``Patrolman.gd`` script. Besides that, I have no way of indicating which points go to which patrolman. I think that is a
+job for groups.
+
+
+
+One possibility is to have all the points organized under one ``Node2D``
