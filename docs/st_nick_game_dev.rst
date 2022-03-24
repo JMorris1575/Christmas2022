@@ -2146,6 +2146,30 @@ What I don't like about my current implementation is the klunky way I have to fi
 ``Patrolman.gd`` script. Besides that, I have no way of indicating which points go to which patrolman. I think that is a
 job for groups.
 
+Improvements
+^^^^^^^^^^^^
+
+I've tried to improve the way I find the patrol points but it's still klunky. I included the patrol points as part of
+the initialization of the NPCs but, in the ``Patrolman.gd`` script trying to save the targets in an ``onready var`` kept
+failing because it needed to be done BEFORE the initialization took place. Back to the drawing board!
+
+Multiple Patrolmen
+^^^^^^^^^^^^^^^^^^
+
+Having more than one patrolman, each with his own patrol points, is also proving to be a problem. How can I identify
+which points go with which patrolmen? I thought it would be easy to identify them according to whether they were in the
+same group as the patrolman but each object can be in more than one group so it's not just a matter of something like::
+
+    if patrolman.group() == target.group():
+        ...
+
+Maybe I can put an ``export var`` in ``Patrolman.tscn`` with the group he is to be associated with. Then maybe I can
+use::
+
+    if target.is_in_group(patrolman_group):
+        ...
+
+That did work, once I remembered I already had a ``Roles`` export variable with the role being played by the current
+npc. I added ``PATROLMAN`` to the list of roles and then had to reload StNicholasAdventure to get it to work.
 
 
-One possibility is to have all the points organized under one ``Node2D``
