@@ -2172,4 +2172,20 @@ use::
 That did work, once I remembered I already had a ``Roles`` export variable with the role being played by the current
 npc. I added ``PATROLMAN`` to the list of roles and then had to reload StNicholasAdventure to get it to work.
 
+Background Music
+================
+
+Background music adds a lot to games -- if it's the right music.
+
+I found several catchy tunes on www.chosic.com and saved them to
+C:\Users\frjam\Documents\Net Gleanings\Sound Effects\from freesound\For StNicholasAdventure\From chosic.com on my home
+computer. It was easy to add an ``AudioStreamPlayer`` called ``BackgroundMusic`` to the menu scene and
+``LevelTemplate.tscn`` as well as ``Level00.tscn`` which does not currently inherit from ``LevelTemplate.tscn``.
+Drag/Dropping each tune to its respective music player and setting Autoplay was all it took.
+
+It is, however, rather jarring to have one bit of music stop and another one start in the blink of an eye. There needs
+to be some kind of transition between levels, but what should it be, and can the music be made to fade out? (Probably,
+with an ``AnimationNode``.)
+
+
 
