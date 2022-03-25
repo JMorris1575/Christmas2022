@@ -2187,5 +2187,13 @@ It is, however, rather jarring to have one bit of music stop and another one sta
 to be some kind of transition between levels, but what should it be, and can the music be made to fade out? (Probably,
 with an ``AnimationNode``.)
 
+More Improvements
+=================
 
+It would be good for patrolmen, and even residents, to stop and look around for a while once they reach their
+destinations. I think I can do this much like jmbiv did the patrol state in his tutorial. It will require a timer which
+I can call ``WaitTimer``. I will put that in ``NPCTemplate.gd`` since all "residents" will need it -- though it may
+have to be overridden somehow for pickpockets and thieves when St. Nick's position is their destination. It will also
+require some programming for their behavior while they are waiting, I don't just want them to stand still. I may have to
+deal with that later. For now, just the timer.
 
