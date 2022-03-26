@@ -2197,3 +2197,11 @@ have to be overridden somehow for pickpockets and thieves when St. Nick's positi
 require some programming for their behavior while they are waiting, I don't just want them to stand still. I may have to
 deal with that later. For now, just the timer.
 
+In order to get some waiting behavior, which I want to be looking back and forth, I will need to:
+
+#. Calculate where I want them to look: 90 degrees from their original direction
+#. Test to see if they are looking in that direction.
+#. If so, pause briefly before having them look in the opposite direction
+
+This will require another timer and an extra function that is only called when the scan_direction needs to be changed.
+
