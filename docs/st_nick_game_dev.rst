@@ -2205,3 +2205,13 @@ In order to get some waiting behavior, which I want to be looking back and forth
 
 This will require another timer and an extra function that is only called when the scan_direction needs to be changed.
 
+.. note::
+
+    April 8, 2022: I'm having trouble getting the waiting behavior to work. It seems I don't understand how to rotate
+    the character. I'm going to have to study that.
+
+At least part of the problem is that the ``position`` of the character is offset according to the original position of
+that character on the level. I thought it would be relative to the character itself. So far, I don't know what to do
+about it.
+
+
