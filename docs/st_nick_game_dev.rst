@@ -2119,14 +2119,14 @@ manipulating the gold bags:
 I still need to update the touchscreen buttons for these actions.
 
 Making a Patrolman
-------------------
+==================
 
 I used the ``Scene`` menu to create a ``New Inherited Scene`` from the ``NPCTemplate`` and called it ``Patrolman``. I
 deleted the script, a copy of ``NPCTemplate.gd`` and replaced it from one that inherited from
 ``res://actors/NPCTemplate.gd``. This is all saved in ``Patrolman.tscn``.
 
 Adding Patrol Points
-^^^^^^^^^^^^^^^^^^^^
+--------------------
 
 My thinking right now is that the points that define the patrolman's territory should not be part of ``Patrolman.tscn``
 because they would move with the patrolman. Then need to be part of the level and then associated with the patrolman
@@ -2135,7 +2135,7 @@ with it? Should I leave the points in their native form and put them in groups t
 I may have to just do something to figure out what is possible.
 
 Getting it to Work
-^^^^^^^^^^^^^^^^^^
+------------------
 
 In Level00 I added a ``Node2D`` called ``PatrolPoints`` that contained four patrol points. I moved
 ``_physics_process()`` to ``NPCTemplate.gd`` as well as some other things. There is a ``get_target()`` function in
@@ -2147,14 +2147,14 @@ What I don't like about my current implementation is the klunky way I have to fi
 job for groups.
 
 Improvements
-^^^^^^^^^^^^
+------------
 
 I've tried to improve the way I find the patrol points but it's still klunky. I included the patrol points as part of
 the initialization of the NPCs but, in the ``Patrolman.gd`` script trying to save the targets in an ``onready var`` kept
 failing because it needed to be done BEFORE the initialization took place. Back to the drawing board!
 
 Multiple Patrolmen
-^^^^^^^^^^^^^^^^^^
+------------------
 
 Having more than one patrolman, each with his own patrol points, is also proving to be a problem. How can I identify
 which points go with which patrolmen? I thought it would be easy to identify them according to whether they were in the
@@ -2171,6 +2171,29 @@ use::
 
 That did work, once I remembered I already had a ``Roles`` export variable with the role being played by the current
 npc. I added ``PATROLMAN`` to the list of roles and then had to reload StNicholasAdventure to get it to work.
+
+.. note:: The following added starting April 26, 2022
+
+Rethinking the Patrol Points
+----------------------------
+
+It seems very awkward NOT to have the patrol points associated directly with the patrolmen. There must be some way to
+give them global coordinates rather than local ones, but how?
+
+Here is what I came up with:
+
+#. Created a ``Node2D`` called ``PatrolPoints`` in ``Patrolman.tscn`` and added five ``Postition2D``\s.
+#. Positioned them as follows:
+
+   A. Point01: (200,0)
+   #. Point02: (0, -200)
+   #. Point03: (-200, 0)
+   #. Point04: (0, 200)
+   #. Point05: (0, 0)
+
+#. When adding a Patrolman to a level you must right-click it and set the "Editable Children" flag.
+#. Then the patrol points may be moved in the editor. If Point05 is left alone it will mark the original position of the
+   Patrolman.
 
 Background Music
 ================
@@ -2214,4 +2237,108 @@ At least part of the problem is that the ``position`` of the character is offset
 that character on the level. I thought it would be relative to the character itself. So far, I don't know what to do
 about it.
 
+.. note:: PyCharm's recent updates seem to have broken some of the functionality of the ReStructuredText plugin. The
+          control buttons no longer appear allowing me to turn it on and off. A workaround, based on what I found
+          online, is to go to Settings->Languages and Frameworks->ReStructuredText and set it to "Swing." After
+          restarting PyCharm I can get the buttons again but the rendering is pretty bad. I think it's better just to
+          keep an html copy open in a browser.
+
+The problem seems to be that I don't understand how to go from the local coordinates of the NPC character to the global
+coordinates of the level. I think I need to study the HeistMeisters tutorial again.
+
+New Approach to NPC Waiting Behavior
+------------------------------------
+
+I'm not getting anywhere with my first approach so perhaps I should try another. Here is an outline of my "proof of
+concept" attempt:
+
+Upon entering the WAITING state the NPC should:
+
+#. Look to the East for 4 seconds
+#. Look to the North for 4 seconds
+#. Look to the South for 4 seconds
+#. Look to the West for 4 seconds
+#. Enter the MOVING state.
+
+That was much easier to implement and worked a lot better! Now I just have to think about how I can improve it.
+
+Here's how it works:
+
+#. In ``_physics_process``, once the npc has completed its calculated path it:
+
+   A. enters into the WAITING state
+   #. gets a set of directions it makes sense to look toward from ``get_open_directions``
+   #. uses ``rotate_toward`` to look in the first open direction
+   #. starts the ``wait_timer``
+
+#. When the ``wait_timer`` times out:
+
+   A. the first item in ``look_direstions`` is popped out
+   #. if there are more ``look_directions`` the ``wait_timer`` is started again
+   #. otherwise the npc enters into the MOVING state and a new target is set.
+
+Here is the code for ``get_open_directions``::
+
+    func get_open_directions():
+        var space_state = get_world_2d().direct_space_state
+        var open_directions = []
+        for direction in [0, 90, -90, -180]:
+            var result = space_state.intersect_ray(global_position, global_position + Vector2(50,0).rotated(deg2rad(direction)), [self])
+            if not result:
+                open_directions.append(direction)
+        return open_directions
+
+It uses ray casting to see if an npc can look at least 50 pixels in each direction.
+
+Making a Pickpocket
+===================
+
+Again, I used the ``Scene`` menu to create a ``New Inherited Scene`` from the ``NPCTemplate`` and called it
+``Pickpocket``. I deleted the script, a copy of ``NPCTemplate.gd`` and replaced it with one that inherited from
+``res://actors/NPCTemplate.gd``. This is all saved in ``Pickpocket.tscn``.
+
+For development purposes I chose to give the pickpocket purple garb to distinguish him from the rest of the npcs. But
+his behavior needs to be different than theirs. He needs to:
+
+#. Be able to tell if he has collided with St. Nick
+#. If so, he must take a gold bag if one is in St. Nick's pocket and then get away to get rid of it.
+#. If possible he will not take a gold bag if he can be seen by a patrolman.
+#. If possible perhaps he can stockpile his ill-gotten-goods and give them back if St. Nick can convince him to repent.
+
+Overriding ``NPCTEmplate``\'s ``_on_Collider_body_entered`` in ``Pickpocket.gd`` seems like the best way to go. The
+colliding body is given as a parameter/argument of the function.
+
+Refactoring the Way Gold Bags are Tracked
+-----------------------------------------
+
+Currently, the only count of the number of gold bags left is in ``Level.gold_bag_count``. I want to change that. Here
+are a couple of reasons:
+
+#. When a pickpocket takes one it should be easier to subtract it from the number in St. Nick's pocket than to dig back
+   and find the number in the level.
+#. If I want St. Nick to go somewhere to pick up some more bags I will have to have two counts: the number remaining to
+   be used in the level and the number currently in St. Nick's pocket.
+
+This will affect how I keep track of the ``gamestate`` and how the ``HUD`` gets its information to display. I'm thinking
+this is a place where it makes a lot of sense to use signals. Whenever St. Nick gains or loses a number of gold bags,
+the change value is sent to one of his functions which emits a signal to be picked up by either ``gamestate.gd`` or
+``HUD.gd`` or both to change the gamestate and manage the Heads Up Display. This requires a signal with a parameter.
+
+It might be helpful, however, to study how things are currently done when St. Nick performs his various operations with
+the gold bags: Removing one from his pocket, Replacing it to his pocket, Throwing one from his hand, and Picking one up
+from the ground.
+
+**Removing a Gold Bag from St. Nick's Pocket**
+
+#. This happens when the ``get_gold_bag`` action fires.
+#. ``gamestate.bags_left`` is checked to see if there are any gold bags (in his pocket)
+#. ``held_golc_bag`` is checked to make sure he doesn't already have one in his hand
+#. A gold bag is created in his hand and something having to do with it staying in his hand happens.
+#. ``gamestate.update_bags_left`` is called with a change of -1, indicating one less gold bag (in his pocket).
+#. In ``gamestate.update_bags_left`` the ``gamestate.bags_left`` variable is adjusted according to the change entered.
+#. ``hud.display_bags_left`` is called with ``gamestate.bags_left`` and a mode telling it to ADD or SUBTRACT.
+#. In ``hud.display_bags_left`` the label is adjusted to show the number of remaining gold bags.
+#. Then, if the mode is SUBTRACT, the "disappear" animation is played
+#. Then, all of the gold bag images are made invisible then rearranged and made visible according to their number.
+#. Finally, if the mode is ADD, the "appear" animation is played for the last gold bag in the series.
 
